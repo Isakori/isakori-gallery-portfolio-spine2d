@@ -7,40 +7,17 @@ const app = new PIXI.Application({
 
 document.getElementById('app').appendChild(app.view);
 
-let loader = PIXI.loader.add('spineboy','./spineboy-pro.json');
-
-loader.add('vine','./vine-pro.json')
-
-loader.add('junko', './Junko.json')
+let loader = PIXI.loader.add('junko', './Junko.json');
 
 loader.load((loader,res)=>{
-    let spineboy = new PIXI.spine.Spine(res.spineboy.spineData),
-        vine = new PIXI.spine.Spine(res.vine.spineData),
-        junko = new PIXI.spine.Spine(res.junko.spineData)
+    let junko = new PIXI.spine.Spine(res.junko.spineData)
         options = [''];
-    // spineboy
-    spineboy.scale.set(0.4);
-    spineboy.state.setAnimation(0,'portal',true);
-    spineboy.x = 400;
-    spineboy.y = 480;
-    spineboy.drawDebug = true;
-
-    // vine
-    vine.scale.set(0.4);
-    vine.state.setAnimation(0,'grow',true);
-    vine.x = 700;
-    vine.y = 480;
-    vine.drawDebug = true;
-
-    // app.stage.addChild(spineboy);
-    // app.stage.addChild(vine);
-
     // Junko -----------------------------------
     junko.scale.set(0.25);
     junko.state.setAnimation(0, '-finalAnimation', true);
     junko.x = 400;
     junko.y = 280;
-    junko.drawDebug = true;
+    junko.drawDebug = false;
 
     app.stage.addChild(junko);
 
