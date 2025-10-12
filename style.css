@@ -89,8 +89,8 @@
     --col-filter-ui-active-background: rgb(56, 157, 235);
     /* --col-filter-character-active-background: rgb(147, 235, 75); */
     --col-filter-character-active-background: rgb(62, 201, 72);
-    --col-filter-other-active-background: rgb(222, 133, 0);
-    --col-filter-interactive-active-background: rgb(235, 85, 144);
+    --col-filter-vfx-active-background: rgb(222, 133, 0);
+    --col-filter-other-active-background: rgb(235, 85, 144);
 }
 @font-face {
     font-family: "nexon-font";
@@ -170,7 +170,7 @@ header{
     filter: drop-shadow(0 0 .5rem rgba(0, 0, 0, .125));
     
     display: flex;
-    height: 56px;
+    height: 4rem;
     flex: 1 0 0;
     padding: 8px 0;
     justify-content: space-between;
@@ -189,6 +189,7 @@ header{
     padding-left: calc(var(--bs-gutter-x) * .5);
     margin-right: auto;
     margin-left: auto;
+    gap: 3.5rem;
 }
 
 .navbar-container button{
@@ -198,14 +199,14 @@ header{
     font-weight: inherit;
 }
 
-.groupbar{
+.displayingbar{
     display: flex;
     align-items: center;
     overflow: hidden;
     border-radius: 6px;
 }
 
-.group-button{
+.display_type_buton{
     all: unset;
     /* height: 32px; */
     /* width: 32px; */
@@ -219,7 +220,7 @@ header{
     background-color: var(--col-theme-accent);
     transition: background-color .2s ease, color .2s ease;
 }
-.group-button.active{
+.display_type_buton.active{
     color: var(--col-btn-active-primary);
     background-color: var(--col-btn-active-secondary);
 }
@@ -235,8 +236,6 @@ header{
 .filterbar{
     display: flex;
     align-items: center;
-    margin-left: 2rem;
-    flex: 1 1 auto;
 }
 
 .filter-list{
@@ -287,13 +286,34 @@ header{
 }
 #f-other.active{
     color: var(--col-theme-text);
-    background-color: var(--col-filter-other-active-background);
+    background-color: var(--col-filter-vfx-active-background);
 }
 #f-interactive.active{
     color: var(--col-theme-text);
-    background-color: var(--col-filter-interactive-active-background);
+    background-color: var(--col-filter-other-active-background);
 }
 
+.switchbar{
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    gap: .5rem;
+}
+.switch-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--col-btn-primary-glow);
+    box-sizing: border-box;
+    background-color: var(--col-theme-accent);
+    color: var(--col-theme-text);
+    border-radius: 6px;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    transition: background-color ease var(--var-animation-duration) 0s;
+}
 
 /* -------------------------------------------------------------- main */
 
@@ -338,7 +358,7 @@ header{
 /* -------------------------------------------------------------- viewport */
 
 #viewer{
-    flex: 0 1 0;
+    flex: 0 1 0; /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
     display: flex;
     transition: flex-grow .2s ease-in-out;
     position: sticky;
@@ -348,6 +368,7 @@ header{
     max-height: 100%;
     border-radius: var(--var-card-border-radius);
     background-color: var(--col-theme-card);
+    box-shadow: 0 0 5px #00000040;
 }
 
 .card-img{
@@ -449,7 +470,7 @@ header{
     background-color: var(--col-btn-active-secondary);
 }
 
-.anim-button.active:hover, .group-button.active:hover, .filter-button.active:hover{
+.anim-button.active:hover, .display_type_buton.active:hover, .filter-button.active:hover{
     background-color: var(--col-btn-active-secondary);
 }
 
@@ -462,11 +483,11 @@ header{
     text-overflow: ellipsis;
 } */
 
-.anim-button:hover, .group-button:hover, .filter-button:hover{
+.anim-button:hover, .display_type_buton:hover, .filter-button:hover{
     background-color: var(--col-btn-pressed);
 }
 
-.anim-button:active, .group-button:active, .filter-button:active{
+.anim-button:active, .display_type_buton:active, .filter-button:active{
     background-color: var(--col-btn-active-primary);
 }
 

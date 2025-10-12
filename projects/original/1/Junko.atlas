@@ -1,0 +1,286 @@
+
+Junko.png
+size: 1324,1324
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Brows
+  rotate: true
+  xy: 824, 158
+  size: 94, 16
+  orig: 94, 17
+  offset: 0, 0
+  index: -1
+Chain
+  rotate: false
+  xy: 1050, 234
+  size: 37, 54
+  orig: 37, 54
+  offset: 0, 0
+  index: -1
+Collar
+  rotate: true
+  xy: 1240, 906
+  size: 112, 78
+  orig: 112, 78
+  offset: 0, 0
+  index: -1
+Dango_1
+  rotate: true
+  xy: 4, 21
+  size: 149, 218
+  orig: 149, 218
+  offset: 0, 0
+  index: -1
+Dango_2
+  rotate: true
+  xy: 226, 21
+  size: 149, 218
+  orig: 149, 218
+  offset: 0, 0
+  index: -1
+Eyes_Clos_Smile
+  rotate: true
+  xy: 1289, 671
+  size: 125, 31
+  orig: 132, 72
+  offset: 7, 17
+  index: -1
+Eyes_Close
+  rotate: true
+  xy: 1289, 542
+  size: 125, 31
+  orig: 127, 65
+  offset: 2, 1
+  index: -1
+Eyes_Front
+  rotate: true
+  xy: 507, 42
+  size: 146, 53
+  orig: 150, 54
+  offset: 2, 1
+  index: -1
+Eyes_Side
+  rotate: true
+  xy: 448, 40
+  size: 148, 55
+  orig: 148, 56
+  offset: 0, 0
+  index: -1
+Face
+  rotate: true
+  xy: 624, 522
+  size: 277, 285
+  orig: 277, 285
+  offset: 0, 0
+  index: -1
+Hair_Back
+  rotate: false
+  xy: 1118, 232
+  size: 189, 272
+  orig: 193, 309
+  offset: 4, 0
+  index: -1
+Hair_Bow
+  rotate: true
+  xy: 1224, 63
+  size: 64, 86
+  orig: 64, 86
+  offset: 0, 0
+  index: -1
+Hair_Front
+  rotate: false
+  xy: 565, 256
+  size: 285, 262
+  orig: 285, 262
+  offset: 0, 0
+  index: -1
+Hair_L
+  rotate: false
+  xy: 1240, 1022
+  size: 70, 118
+  orig: 70, 120
+  offset: 0, 2
+  index: -1
+Hair_R
+  rotate: true
+  xy: 363, 572
+  size: 93, 155
+  orig: 93, 155
+  offset: 0, 0
+  index: -1
+Halo
+  rotate: false
+  xy: 854, 292
+  size: 260, 212
+  orig: 266, 217
+  offset: 3, 2
+  index: -1
+L_Arm
+  rotate: true
+  xy: 1230, 1144
+  size: 176, 81
+  orig: 176, 81
+  offset: 0, 0
+  index: -1
+L_Finger_1
+  rotate: true
+  xy: 1091, 272
+  size: 16, 23
+  orig: 18, 23
+  offset: 0, 0
+  index: -1
+L_Finger_2
+  rotate: false
+  xy: 1289, 509
+  size: 29, 29
+  orig: 29, 29
+  offset: 0, 0
+  index: -1
+L_Finger_3
+  rotate: false
+  xy: 824, 114
+  size: 26, 40
+  orig: 26, 40
+  offset: 0, 0
+  index: -1
+L_Finger_4
+  rotate: false
+  xy: 1240, 752
+  size: 29, 44
+  orig: 29, 44
+  offset: 0, 0
+  index: -1
+L_Horn
+  rotate: true
+  xy: 646, 16
+  size: 46, 74
+  orig: 46, 74
+  offset: 0, 0
+  index: -1
+L_Twin_Tail
+  rotate: false
+  xy: 4, 550
+  size: 355, 770
+  orig: 355, 773
+  offset: 0, 3
+  index: -1
+L_Wing
+  rotate: false
+  xy: 342, 192
+  size: 219, 354
+  orig: 219, 354
+  offset: 0, 0
+  index: -1
+Legs
+  rotate: true
+  xy: 565, 66
+  size: 186, 255
+  orig: 192, 255
+  offset: 0, 0
+  index: -1
+Lower_Jacket
+  rotate: false
+  xy: 624, 803
+  size: 332, 311
+  orig: 347, 368
+  offset: 15, 57
+  index: -1
+Lower_Jacket_Back
+  rotate: false
+  xy: 1240, 800
+  size: 72, 102
+  orig: 72, 102
+  offset: 0, 0
+  index: -1
+Mouth_Close
+  rotate: true
+  xy: 1311, 475
+  size: 30, 9
+  orig: 30, 9
+  offset: 0, 0
+  index: -1
+Mouth_Open
+  rotate: true
+  xy: 913, 755
+  size: 44, 31
+  orig: 44, 31
+  offset: 0, 0
+  index: -1
+Mouth_Smile
+  rotate: false
+  xy: 724, 41
+  size: 48, 21
+  orig: 48, 21
+  offset: 0, 0
+  index: -1
+Neck
+  rotate: true
+  xy: 522, 566
+  size: 99, 95
+  orig: 99, 95
+  offset: 0, 0
+  index: -1
+R_Arm
+  rotate: true
+  xy: 960, 750
+  size: 364, 276
+  orig: 381, 276
+  offset: 0, 0
+  index: -1
+R_Horn
+  rotate: false
+  xy: 1050, 102
+  size: 170, 126
+  orig: 171, 126
+  offset: 1, 0
+  index: -1
+R_Twin_Tail
+  rotate: true
+  xy: 363, 1118
+  size: 202, 863
+  orig: 202, 863
+  offset: 0, 0
+  index: -1
+R_Wing
+  rotate: false
+  xy: 363, 669
+  size: 257, 445
+  orig: 266, 445
+  offset: 9, 0
+  index: -1
+Sign__
+  rotate: false
+  xy: 854, 111
+  size: 192, 177
+  orig: 192, 177
+  offset: 0, 0
+  index: -1
+Skirt
+  rotate: true
+  xy: 4, 174
+  size: 372, 334
+  orig: 372, 336
+  offset: 0, 2
+  index: -1
+Sound____
+  rotate: false
+  xy: 564, 25
+  size: 78, 37
+  orig: 78, 37
+  offset: 0, 0
+  index: -1
+Upper_Jacket
+  rotate: true
+  xy: 913, 508
+  size: 238, 372
+  orig: 252, 384
+  offset: 5, 0
+  index: -1
+VFX_Blick
+  rotate: true
+  xy: 1224, 131
+  size: 97, 96
+  orig: 99, 100
+  offset: 1, 2
+  index: -1
