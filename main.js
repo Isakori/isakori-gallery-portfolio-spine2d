@@ -1,8 +1,7 @@
-/* ----------------------------------------------------------------------------- 0 */
-const dropButton = document.querySelector('.anim-skeleton-drop-button');
-const dropMenu = document.querySelector('.dropdown-menu');
 /* ----------------------------------------------------------------------------- 1 */
-const animList = document.querySelector(".animation-list");
+const skeletonDropdownButton = document.querySelector('.anim-skeleton-drop-button');
+const skeletonMenu = document.querySelector(".dropdown-menu");
+const animationList = document.querySelector(".animation-list");
 /* ----------------------------------------------------------------------------- 2 */
 const display_type_list = document.querySelector(".displayingbar");
 /* ----------------------------------------------------------------------------- 3 */
@@ -18,23 +17,15 @@ const gallery_grid = document.getElementById("gallery-grid");
 const loader = PIXI.Loader.shared;
 
 /* ------------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------- 0 */
-dropButton.addEventListener('click', (e) => {
+/* ----------------------------------------------------------------------------- 1 */
+skeletonDropdownButton.addEventListener('click', (e) => {
     e.stopPropagation();
-    dropButton.classList.toggle('open');
+    skeletonDropdownButton.classList.toggle('open');
 });
 
 document.addEventListener('click', (e) => {
-    if (!dropButton.contains(e.target)) {
-        dropButton.classList.remove('open');
-    }
-});
-/* ----------------------------------------------------------------------------- 1 */
-animList.addEventListener("click", (e) => {
-    if (e.target.closest(".anim-button")) {
-        const active = animList.querySelector(".anim-button.active");
-        if (active) active.classList.remove("active");
-        e.target.closest(".anim-button").classList.add("active");
+    if (!skeletonDropdownButton.contains(e.target)) {
+        skeletonDropdownButton.classList.remove('open');
     }
 });
 /* ----------------------------------------------------------------------------- 2 */
@@ -129,8 +120,8 @@ loadProjects().then((projects) => {
 
         const card = document.createElement("div");
         card.classList.add("card");
-        card.setAttribute("tabindex", "0"); // для фокуса через Tab
-        card.dataset.projectId = project.id; // удобно хранить id
+        card.setAttribute("tabindex", "0");
+        card.dataset.projectId = project.id;
 
         const img = document.createElement("img");
         img.src = `${project.path}/${project.projectName}${project.imagePostfix}`;
@@ -142,12 +133,12 @@ loadProjects().then((projects) => {
         wrapper.appendChild(card);
         gallery_grid.appendChild(wrapper);
 
-        // 🔹 Обработчик клика
+        // Обработчик клика
         card.addEventListener("click", () => {
             showInViewer(project);
         });
 
-        // 🔹 Обработчик клавиш (Enter)
+        // Обработчик клавиш (Enter)
         card.addEventListener("keydown", (event) => {
             if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
@@ -190,8 +181,10 @@ viewport
         percent: 0.05
     })
     .pinch({ /* масштабирование пальцами */
-        factor: 1.4,
-        percent: 1
+        noDrag: true,
+        factor: 1,
+        percent: 0.5,
+        center: {x: viewport.screenWidth / 2, y: viewport.screenHeight / 2}
     })
     .decelerate({ friction: 0.85 })
     .clamp({
@@ -225,12 +218,6 @@ viewport.addChild(axisMarker);
 
 viewport.moveCenter(worldCenter.x, worldCenter.y);
 
-/* ----------------------------------------------------------------------------------------- */
-/* const worldBorder = new PIXI.Graphics();
-worldBorder.lineStyle(16, 0xFFFFFF, 1);
-worldBorder.drawRect(0, 0, worldSize.x, worldSize.y);
-worldBorder.endFill();
-viewport.addChild(worldBorder); */
 /* ------------------------------------------------------------------------------------------- responsive viewport */
 
 const resizeObserver = new ResizeObserver(() => {
@@ -252,10 +239,6 @@ const resizeObserver = new ResizeObserver(() => {
 });
 resizeObserver.observe(holder);
 
-/* ---------------------------------------------------------------------------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------------------------------------------------------------------------- */
-
 function unwrapViewport(){
     const flexGrow = window.getComputedStyle(viewer).flexGrow;
     if (parseFloat(flexGrow) === 0) {
@@ -265,41 +248,44 @@ function unwrapViewport(){
     return false;
 }
 
-let currentProject = null;
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+
 let currentSpines = [];
 
-function unloadCurrentProject() {
+function unloadCurrentProject(nextProject = null) {
     currentSpines.forEach(spine => {
         viewport.removeChild(spine);
         spine.destroy({ children: true, texture: false, baseTexture: false });
     });
 
     currentSpines = [];
-    currentProject = null;
 
     PIXI.utils.clearTextureCache();
+
+    skeletonMenu.innerHTML = "";
+    animationList.innerHTML = "";
+    skeletonDropdownButton.innerHTML = `${svgDropdownIcon}${nextProject ? nextProject.skeletons[0] : "Skeleton"}`;
 }
 
 function showInViewer(project) {
     justUnwrapped = unwrapViewport();
-
-    // Удаляем старый проект, если он есть
-    unloadCurrentProject();
-
-    currentProject = project;
-    console.log(`Загрузка проекта "${project.projectName}"...`);
+    unloadCurrentProject(project);
 
     const loader = new PIXI.Loader();
     const basePath = project.path;
+    currentSpines = [];
+
+    // Сброс меню перед новой загрузкой
+    skeletonMenu.innerHTML = "";
+    animationList.innerHTML = "";
 
     project.skeletons.forEach(name => {
         loader.add(name, `${basePath}/${name}.json`);
     });
 
     loader.load((_, resources) => {
-        const name = project.skeletons[0];
-        const base = `${project.path}/${name}.json`;
-
         let loadedSkeletons = [];
 
         project.skeletons.forEach((name, index) => {
@@ -307,8 +293,8 @@ function showInViewer(project) {
             if (!resource || !resource.spineData) return;
 
             const spine = new PIXI.spine.Spine(resource.spineData);
+            spine.name = name;
 
-            // позиционирование каждого скелета
             spine.scale.set(1);
             spine.x = worldCenter.x;
             spine.y = worldCenter.y;
@@ -316,35 +302,134 @@ function showInViewer(project) {
             viewport.addChild(spine);
             currentSpines.push(spine);
 
-            // выводим список анимаций в консоль
-            console.log(`${name} animations:`, spine.spineData.animations.map(a => a.name));
-
-            // можно сразу запустить первую анимацию (пример)
             if (spine.state && spine.spineData.animations.length > 0) {
               spine.state.setAnimation(0, spine.spineData.animations[0].name, true);
             }
-
-            const bounds = getWorldBounds(spine);
-            console.log(bounds.x, bounds.y, bounds.width, bounds.height);
-            
-            /* viewport.moveCenter(
-                bounds.x + bounds.width / 2,
-                bounds.y + bounds.height / 2
-            ); */
             loadedSkeletons.push(spine);
+
+            // === Создание кнопки скелета в меню ===
+            const li = document.createElement("li");
+            const btn = document.createElement("button");
+            btn.className = "dropdown-item";
+            btn.innerHTML = `${svgSkiletonIcon}${name}`;
+            btn.addEventListener("click", () => selectSkeleton(spine));
+            li.appendChild(btn);
+            skeletonMenu.appendChild(li);
+
+            // Первый скелет активен по умолчанию
+            if (index === 0) selectSkeleton(spine);
         });
 
-        console.log(`Проект "${project.projectName}" успешно загружен.`);
         loader.reset();
+
 
         const offsetTimer = justUnwrapped ? 250 : 0;
             setTimeout(() => {
                 focusOnSpines(viewport, loadedSkeletons, {
-                    padding: 0.5,   // на сколько отступить от краёв
-                    duration: 500  // скорость анимации в мс
+                    padding: 0.5,
+                    duration: 500
                 });
             }, offsetTimer);
     });
+}
+
+function selectSkeleton(spine) {
+    // Обновление активности в меню
+    skeletonMenu.querySelectorAll(".dropdown-item").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = Array.from(skeletonMenu.children).find(li => li.textContent.trim() === spine.name);
+    if (activeBtn) activeBtn.querySelector("button").classList.add("active");
+
+    // Обновление надписи на главной кнопке
+    skeletonDropdownButton.innerHTML = `
+    ${svgDropdownIcon}
+    ${spine.name}`;
+
+    // Очистка старых анимаций
+    animationList.innerHTML = "";
+
+    const sortedAnims = [...spine.spineData.animations].map(a => a.name).sort(a => a === "-default" ? -1 : 1);
+
+    sortedAnims.forEach((anim, index) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.className = "anim-button";
+        btn.dataset.anim = anim;
+        btn.dataset.state = "stopped";
+
+        const playIcon = svgPlay;
+        btn.innerHTML = `${playIcon}${anim}`;
+
+        btn.addEventListener("click", () => toggleAnimation(btn, spine));
+        li.appendChild(btn);
+        animationList.appendChild(li);
+
+        if (index === 0) {
+            btn.classList.add("active");
+            playAnimation(spine, anim);
+            btn.dataset.state = "playing";
+            btn.innerHTML = `${svgDefaultStop}${anim}`;
+        }
+    });
+}
+
+// Триггер кнопки анимации
+function toggleAnimation(button, skeleton) {
+    const currentAnim = button.dataset.anim;
+    const isDefault = currentAnim === "-default";
+
+    const allButtons = document.querySelectorAll(".anim-button");
+    allButtons.forEach(b => {
+        if (b !== button) {
+            b.dataset.state = "stopped";
+            b.classList.remove("active");
+            const anim = b.dataset.anim;
+            b.innerHTML = `${(anim === "-default" ? svgDefaultPlay : svgPlay)}${anim}`;
+        }
+    });
+
+    // Логика переключения состояний
+    if (button.dataset.state === "playing") {
+        pauseAnimation(skeleton, currentAnim);
+        button.dataset.state = "paused";
+        button.innerHTML = `${(isDefault ? svgDefaultPlay : svgPlay)}${currentAnim}`;
+    } else {
+        playAnimation(skeleton, currentAnim);
+        button.dataset.state = "playing";
+        button.classList.add("active");
+        button.innerHTML = `${(isDefault ? svgDefaultStop : svgStop)}${currentAnim}`;
+    }
+}
+
+// SVG шаблоны
+const svgSkiletonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7.157 2.207c.066 2.004 1.454 3.117 4.221 3.55c2.345.368 4.46.181 5.151-1.829C17.874.01 14.681.985 11.915.55S7.051-1.013 7.157 2.207m.831 8.23c.257 1.497 1.652 2.355 3.786 2.297c2.135-.059 3.728-.892 3.949-2.507c.409-2.988-1.946-1.832-4.08-1.774c-2.136.059-4.161-.952-3.655 1.984m2.778 6.852c.424 1.117 1.587 1.589 3.159 1.253c1.569-.335 2.656-.856 2.568-2.129c-.159-2.357-1.713-1.616-3.283-1.279c-1.571.333-3.272-.039-2.444 2.155m1.348 5.221c.123.943.939 1.5 2.215 1.49c1.279-.011 2.248-.515 2.412-1.525c.308-1.871-1.123-1.175-2.4-1.165c-1.28.01-2.47-.65-2.227 1.2"/></svg>`;
+const svgSkiletonIconOld = `<svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" d="M14 22V16.9612C14 16.3537 13.7238 15.7791 13.2494 15.3995L11.5 14M11.5 14L13 7.5M11.5 14L10 13M13 7.5L11 7M13 7.5L15.0426 10.7681C15.3345 11.2352 15.8062 11.5612 16.3463 11.6693L18 12M10 13L11 7M10 13L9.40011 16.2994C9.18673 17.473 8.00015 18.2 6.85767 17.8573L4 17M11 7L8.10557 8.44721C7.428 8.786 7 9.47852 7 10.2361V12M14.5 3.5C14.5 4.05228 14.0523 4.5 13.5 4.5C12.9477 4.5 12.5 4.05228 12.5 3.5C12.5 2.94772 12.9477 2.5 13.5 2.5C14.0523 2.5 14.5 2.94772 14.5 3.5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const svgDropdownIcon = `<svg class="dropdown-icon" focusable="false" role="img" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"></path></svg>`;
+const svgDefaultPlay = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="none" d="M5.008 12.897a.644.644 0 0 1-.91-.227.719.719 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182l-6.677 4.306z"/></svg>`;
+const svgDefaultStop = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="none" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
+const svgPlay = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M5.008 12.897a.644.644 0 0 1-.91-.227.719.719 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182l-6.677 4.306z"/></svg>`;
+const svgStop = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
+
+// Вспомогательные функции для Spine
+function playAnimation(skeleton, animName) {
+    const spineObj = currentSpines.find(s => s.name === skeleton.name);
+    if (!spineObj) return;
+
+    const state = spineObj.state;
+    const currentTrack = state.getCurrent(0);
+
+    if (currentTrack && currentTrack.animation.name === animName) {
+        state.tracks.forEach(track => track.timeScale = 1);
+    } else {
+        state.setAnimation(0, animName, true);
+        // state.timeScale = 1;
+    }
+}
+
+function pauseAnimation(skeleton, animName) {
+    const spineObj = currentSpines.find(s => s.name === skeleton.name);
+    if (spineObj) {
+        spineObj.state.tracks.forEach(track => track.timeScale = 0);
+    }
 }
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
