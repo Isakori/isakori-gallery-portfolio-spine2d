@@ -1,0 +1,74 @@
+{
+    "original": [
+        {
+            "id": 1,
+            "projectName": "Junko",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Junko"
+            ],
+            "tags": [
+                "character"
+            ]
+        }
+    ],
+    "Mike Mac": [
+        {
+            "id": 2,
+            "projectName": "Bats",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Bat1",
+                "Bat2"
+            ],
+            "tags": [
+                "character"
+            ]
+        },
+        {
+            "id": 3,
+            "projectName": "Croc",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Croc"
+            ],
+            "tags": [
+                "character"
+            ]
+        },
+        {
+            "id": 4,
+            "projectName": "Kong",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Kong"
+            ],
+            "tags": [
+                "character"
+            ]
+        },
+        {
+            "id": 5,
+            "projectName": "Slime",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Slime"
+            ],
+            "tags": [
+                "character"
+            ]
+        },
+        {
+            "id": 6,
+            "projectName": "Cactus",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Cactus"
+            ],
+            "tags": [
+                "character"
+            ]
+        }
+    ],
+    "Anibal": []
+}

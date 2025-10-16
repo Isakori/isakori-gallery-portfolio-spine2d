@@ -1,0 +1,62 @@
+
+Bat1.png
+size: 476,476
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+1/eye-glare1
+  rotate: false
+  xy: 374, 328
+  size: 69, 50
+  orig: 69, 50
+  offset: 0, 0
+  index: -1
+1/eye-pupil1
+  rotate: false
+  xy: 239, 15
+  size: 91, 58
+  orig: 95, 61
+  offset: 2, 2
+  index: -1
+1/eye-white1
+  rotate: true
+  xy: 284, 242
+  size: 136, 86
+  orig: 139, 88
+  offset: 1, 1
+  index: -1
+1/eyebrow1
+  rotate: false
+  xy: 334, 42
+  size: 119, 31
+  orig: 121, 35
+  offset: 1, 3
+  index: -1
+1/main1
+  rotate: false
+  xy: 4, 189
+  size: 276, 282
+  orig: 279, 283
+  offset: 1, 0
+  index: -1
+1/mouth1
+  rotate: false
+  xy: 4, 12
+  size: 231, 173
+  orig: 234, 177
+  offset: 1, 3
+  index: -1
+1/wing-L1
+  rotate: true
+  xy: 239, 77
+  size: 108, 232
+  orig: 110, 234
+  offset: 2, 0
+  index: -1
+1/wing-R1
+  rotate: true
+  xy: 284, 382
+  size: 89, 187
+  orig: 90, 189
+  offset: 0, 0
+  index: -1

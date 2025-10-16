@@ -1,0 +1,48 @@
+
+Slime.png
+size: 1040,1040
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Mucus_VFX
+  rotate: false
+  xy: 250, 251
+  size: 56, 56
+  orig: 64, 64
+  offset: 4, 4
+  index: -1
+Phase 1
+  rotate: true
+  xy: 250, 311
+  size: 77, 42
+  orig: 79, 45
+  offset: 1, 2
+  index: -1
+Phase 2
+  rotate: false
+  xy: 250, 392
+  size: 121, 148
+  orig: 125, 152
+  offset: 1, 1
+  index: -1
+Phase 3
+  rotate: false
+  xy: 4, 544
+  size: 347, 489
+  orig: 347, 491
+  offset: 0, 1
+  index: -1
+Phase 3-1
+  rotate: false
+  xy: 4, 202
+  size: 242, 338
+  orig: 242, 341
+  offset: 0, 1
+  index: -1
+Phase 4
+  rotate: false
+  xy: 4, 4
+  size: 340, 194
+  orig: 340, 195
+  offset: 0, 0
+  index: -1

@@ -430,14 +430,98 @@ header{
     background-color: var(--col-btn-active-primary);
 }
 
+.animation-panel{
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    /* gap: 1rem; */
+    /* background-color: var(--col-theme-card); */
+}
+
+.anim-drop-button-holder{
+    height: 3.5rem;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+}
+
+.anim-skeleton-drop-button{
+    all: unset;
+    min-width: 2rem;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    cursor: pointer;
+    border-radius: 999px;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    color: var(--col-theme-text);
+    background-color: var(--col-theme-accent);
+    transition: background-color .2s ease, color .2s ease;
+    text-decoration: none;
+}
+
+.dropdown-menu{
+    /* display: none; */
+    opacity: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 90%;
+    /* left: -10%; */
+    border-radius: 6px;
+    z-index: 15;
+    overflow: hidden;
+    color: var(--col-btn-primary);
+    background-color: var(--col-theme-background);
+    border-color: var(--col-theme-accent);
+    transition: background-color ease var(--var-animation-duration) 0s;
+    box-shadow: 0 0 10px #000000ff;
+    width: fit-content;
+    min-width: 10rem;
+    max-width: 15rem;
+    transition: opacity  ease .15s;
+    pointer-events: none;
+}
+
+.anim-skeleton-drop-button.open + .dropdown-menu{
+    /* display: block; */
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dropdown-item{
+    display: flex;
+    height: 32px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    color: var(--col-theme-text);
+    justify-content: flex-start;
+    align-items: center;
+    text-decoration: none;
+    gap: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: inherit;
+    font-size: inherit;
+    transition: background-color ease var(--var-animation-duration) 0s;
+}
+
 .animation-list{
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    width: 200px;
-    background-color: var(--col-theme-card); /* ---------------- */
+    border-radius: var(--var-card-border-radius);
+    
     z-index: 10;
     overflow-y: auto;
     overflow-x: hidden;
@@ -449,6 +533,7 @@ header{
     width: 100%;
     border: none;
     background-color: var(--col-theme-accent);
+    /* background-color: transparent; */
     color: var(--col-theme-text);
     justify-content: flex-start;
     align-items: center;
@@ -465,12 +550,12 @@ header{
     display: block;
 }
 
-.anim-button.active{
+.anim-button.active, .dropdown-item.active{
     color: var(--col-btn-active-primary);
     background-color: var(--col-btn-active-secondary);
 }
 
-.anim-button.active:hover, .display_type_buton.active:hover, .filter-button.active:hover{
+.anim-button.active:hover, .display_type_buton.active:hover, .filter-button.active:hover, .dropdown-item.active:hover{
     background-color: var(--col-btn-active-secondary);
 }
 
@@ -483,11 +568,11 @@ header{
     text-overflow: ellipsis;
 } */
 
-.anim-button:hover, .display_type_buton:hover, .filter-button:hover{
+.anim-button:hover, .display_type_buton:hover, .filter-button:hover, .anim-skeleton-drop-button:hover, .dropdown-item:hover, .anim-skeleton-drop-button.open{
     background-color: var(--col-btn-pressed);
 }
 
-.anim-button:active, .display_type_buton:active, .filter-button:active{
+.anim-button:active, .display_type_buton:active, .filter-button:active, .anim-skeleton-drop-button:active, .dropdown-item:active{
     background-color: var(--col-btn-active-primary);
 }
 

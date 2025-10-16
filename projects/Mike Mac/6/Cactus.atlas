@@ -1,0 +1,167 @@
+
+Cactus.png
+size: 2052,2052
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Arm_left
+  rotate: true
+  xy: 4, 782
+  size: 357, 346
+  orig: 358, 347
+  offset: 0, 1
+  index: -1
+Arm_right
+  rotate: false
+  xy: 354, 783
+  size: 330, 356
+  orig: 331, 358
+  offset: 1, 2
+  index: -1
+Body
+  rotate: false
+  xy: 1177, 96
+  size: 837, 668
+  orig: 838, 668
+  offset: 0, 0
+  index: -1
+Details_1
+  rotate: true
+  xy: 1924, 1962
+  size: 85, 115
+  orig: 85, 115
+  offset: 0, 0
+  index: -1
+Details_2
+  rotate: true
+  xy: 1924, 1873
+  size: 85, 115
+  orig: 85, 115
+  offset: 0, 0
+  index: -1
+Details_3
+  rotate: true
+  xy: 1924, 1797
+  size: 72, 88
+  orig: 72, 88
+  offset: 0, 0
+  index: -1
+Details_4
+  rotate: false
+  xy: 618, 640
+  size: 65, 65
+  orig: 66, 65
+  offset: 1, 0
+  index: -1
+Details_5
+  rotate: false
+  xy: 618, 709
+  size: 66, 70
+  orig: 66, 70
+  offset: 0, 0
+  index: -1
+Details_6
+  rotate: true
+  xy: 1924, 1716
+  size: 77, 85
+  orig: 78, 85
+  offset: 0, 0
+  index: -1
+Eye
+  rotate: true
+  xy: 618, 91
+  size: 264, 165
+  orig: 266, 169
+  offset: 1, 3
+  index: -1
+Eye_glare
+  rotate: true
+  xy: 2016, 1826
+  size: 43, 21
+  orig: 43, 21
+  offset: 0, 0
+  index: -1
+Eye_pupil
+  rotate: true
+  xy: 1924, 1640
+  size: 72, 83
+  orig: 76, 89
+  offset: 2, 2
+  index: -1
+Eye_subglare
+  rotate: true
+  xy: 2016, 1789
+  size: 33, 18
+  orig: 33, 18
+  offset: 0, 0
+  index: -1
+Eyebrow
+  rotate: true
+  xy: 1888, 1403
+  size: 233, 159
+  orig: 234, 160
+  offset: 0, 0
+  index: -1
+Head
+  rotate: true
+  xy: 4, 23
+  size: 741, 326
+  orig: 745, 327
+  offset: 2, 0
+  index: -1
+Lips
+  rotate: false
+  xy: 4, 1143
+  size: 1014, 904
+  orig: 1014, 904
+  offset: 0, 0
+  index: -1
+Mouth
+  rotate: true
+  xy: 1022, 768
+  size: 694, 859
+  orig: 694, 859
+  offset: 0, 0
+  index: -1
+Pot_bottom
+  rotate: true
+  xy: 1008, 29
+  size: 735, 165
+  orig: 744, 167
+  offset: 3, 1
+  index: -1
+Pot_top
+  rotate: false
+  xy: 1022, 1466
+  size: 862, 213
+  orig: 868, 217
+  offset: 3, 2
+  index: -1
+Pot_top_crack
+  rotate: true
+  xy: 787, 184
+  size: 171, 187
+  orig: 176, 192
+  offset: 3, 2
+  index: -1
+Teeth_bottom
+  rotate: true
+  xy: 334, 8
+  size: 770, 280
+  orig: 772, 308
+  offset: 0, 1
+  index: -1
+Teeth_top
+  rotate: true
+  xy: 688, 359
+  size: 780, 316
+  orig: 780, 316
+  offset: 0, 0
+  index: -1
+Tongue
+  rotate: false
+  xy: 1022, 1683
+  size: 898, 364
+  orig: 898, 364
+  offset: 0, 0
+  index: -1

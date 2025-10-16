@@ -1,0 +1,139 @@
+
+Kong.png
+size: 1836,1836
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Arm_Right
+  rotate: true
+  xy: 1329, 1166
+  size: 665, 497
+  orig: 667, 499
+  offset: 0, 0
+  index: -1
+Body
+  rotate: false
+  xy: 4, 437
+  size: 973, 1394
+  orig: 973, 1396
+  offset: 0, 2
+  index: -1
+Eye_Left
+  rotate: true
+  xy: 1081, 438
+  size: 84, 57
+  orig: 88, 58
+  offset: 1, 1
+  index: -1
+Eye_Right
+  rotate: true
+  xy: 1142, 468
+  size: 54, 51
+  orig: 59, 55
+  offset: 2, 2
+  index: -1
+Hand_Left
+  rotate: false
+  xy: 487, 17
+  size: 449, 416
+  orig: 452, 420
+  offset: 0, 2
+  index: -1
+Hand_Right
+  rotate: true
+  xy: 4, 38
+  size: 395, 479
+  orig: 399, 480
+  offset: 2, 0
+  index: -1
+Mouth
+  rotate: false
+  xy: 940, 5
+  size: 385, 428
+  orig: 385, 431
+  offset: 0, 0
+  index: -1
+Shield
+  rotate: true
+  xy: 981, 526
+  size: 636, 618
+  orig: 638, 619
+  offset: 1, 0
+  index: -1
+Sword
+  rotate: false
+  xy: 981, 1310
+  size: 285, 521
+  orig: 286, 521
+  offset: 0, 0
+  index: -1
+Sword Hilt
+  rotate: false
+  xy: 1329, 14
+  size: 99, 87
+  orig: 105, 92
+  offset: 3, 2
+  index: -1
+Tongue
+  rotate: false
+  xy: 1603, 630
+  size: 178, 244
+  orig: 182, 244
+  offset: 1, 0
+  index: -1
+Tooth Bottom 1
+  rotate: true
+  xy: 1675, 8
+  size: 270, 156
+  orig: 274, 160
+  offset: 2, 2
+  index: -1
+Tooth Bottom 2
+  rotate: false
+  xy: 1329, 105
+  size: 342, 173
+  orig: 345, 177
+  offset: 2, 2
+  index: -1
+Tooth Bottom 3
+  rotate: true
+  xy: 1603, 878
+  size: 284, 195
+  orig: 289, 200
+  offset: 3, 3
+  index: -1
+Tooth Top
+  rotate: false
+  xy: 1329, 282
+  size: 412, 240
+  orig: 416, 242
+  offset: 3, 1
+  index: -1
+VFX_Glare
+  rotate: true
+  xy: 1113, 1178
+  size: 128, 126
+  orig: 128, 128
+  offset: 0, 2
+  index: -1
+VFX_Light
+  rotate: false
+  xy: 981, 1178
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+VFX_Particle_0
+  rotate: false
+  xy: 1197, 470
+  size: 52, 52
+  orig: 64, 64
+  offset: 6, 6
+  index: -1
+topknot
+  rotate: false
+  xy: 981, 438
+  size: 96, 84
+  orig: 99, 88
+  offset: 2, 2
+  index: -1
