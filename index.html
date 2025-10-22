@@ -20,23 +20,32 @@
             <div class="navbar">
                 <div class="navbar-container">
                     <div class="displayingbar" title="Projects display type">
-                        <button class="display_type_buton active">1</button>
-                        <button class="display_type_buton">2</button>
-                        <button class="display_type_buton">3</button>
+                        <button id="perfect-grid-button" class="display-type-buton active">
+                            <svg fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect fill="#00d9fa" width="350" height="350" rx="56"/><rect x="450" width="350" height="350" rx="56"/><rect y="450" width="350" height="350" rx="56"/><rect x="450" y="450" width="350" height="350" rx="56"/></svg>
+                        </button>
+                        <button id="adaptive-flex-button" class="display-type-buton">
+                            <svg fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect x="500" width="250" height="350" rx="56" transform="translate(1300 350) rotate(180)"/><rect width="450" height="350" rx="56" transform="translate(450 350) rotate(180)"/><rect fill="#00d9fa" x="300" y="450" width="500" height="350" rx="56" transform="translate(1100 1250) rotate(180)"/><rect y="450" width="200" height="350" rx="56" transform="translate(200 1250) rotate(180)"/></svg>
+                        </button>
+                        <button id="cardfall-button" class="display-type-buton">
+                            <svg fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect width="350" height="250" rx="56"/><rect x="450" width="350" height="430" rx="56"/><rect fill="#00d9fa" y="350" width="350" height="450" rx="56"/><rect x="450" y="530" width="350" height="270" rx="56"/></svg>
+                        </button>
                     </div>
-                    <!--<span class="maru-sep">●</span>-->
                     <div class="filterbar">
                         <ul class="filter-list">
-                            <button class="filter-button active" id="f-all">All</button>
+                            <button class="filter-button active" id="f-all" data-filter="all">All</button>
                             <div class="filter-line" id="f-separator"></div>
-                            <button class="filter-button" id="f-ui">UI</button>
-                            <button class="filter-button" id="f-char">Character</button>
-                            <button class="filter-button" id="f-other">VFX</button>
-                            <button class="filter-button" id="f-interactive">Other</button>
+                            <button class="filter-button" id="f-ui" data-filter="ui">UI</button>
+                            <button class="filter-button" id="f-char" data-filter="character">Character</button>
+                            <button class="filter-button" id="f-other" data-filter="vfx">VFX</button>
+                            <button class="filter-button" id="f-interactive" data-filter="other">Other</button>
                         </ul>
                     </div>
                     <div class="switchbar">
-                        <button class="switch-button" id="switcher-interactive">1</button>
+                        <button class="switch-button" id="switcher-interactive" title="Show only interactable projects">
+                            <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><path fill="#00d9fa" d="M52,75A17.63,17.63,0,0,1,68.24,50.64h0A17.44,17.44,0,0,1,75,52l28,11.54c0-.34,0-.68,0-1A40.5,40.5,0,1,0,62.5,103c.35,0,.69,0,1,0Z"/><path fill="currentColor" d="M68.35,114.67a53.75,53.75,0,0,1-5.85.33A52.5,52.5,0,1,1,115,62.5a53.75,53.75,0,0,1-.33,5.85l9.56,4a63.32,63.32,0,0,0,.77-9.8A62.5,62.5,0,1,0,62.5,125a63.32,63.32,0,0,0,9.8-.77Z"/><path fill="currentColor" d="M122.26,125.24,109,156.57a5.62,5.62,0,0,1-10.37,0L63.08,70.42a5.62,5.62,0,0,1,7.34-7.34l86.1,35.52a5.62,5.62,0,0,1,0,10.37l-31.33,13.29A5.57,5.57,0,0,0,122.26,125.24Z"/></svg>
+                            <!-- <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><path fill="#00d9fa" d="M52,75A17.63,17.63,0,0,1,68.24,50.64h0A17.44,17.44,0,0,1,75,52l28,11.54c0-.34,0-.68,0-1A40.5,40.5,0,1,0,62.5,103c.35,0,.69,0,1,0Z"/><path fill="currentColor" d="M68.35,114.67a53.75,53.75,0,0,1-5.85.33A52.5,52.5,0,1,1,115,62.5a53.75,53.75,0,0,1-.33,5.85l9.56,4a63.32,63.32,0,0,0,.77-9.8A62.5,62.5,0,1,0,62.5,125a63.32,63.32,0,0,0,9.8-.77Z"/><path fill="#ffd000" d="M122.26,125.24,109,156.57a5.62,5.62,0,0,1-10.37,0L63.08,70.42a5.62,5.62,0,0,1,7.34-7.34l86.1,35.52a5.62,5.62,0,0,1,0,10.37l-31.33,13.29A5.57,5.57,0,0,0,122.26,125.24Z"/></svg> -->
+                            <!-- <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><path fill="#00d9fa" d="M52,75A17.63,17.63,0,0,1,68.24,50.64h0A17.44,17.44,0,0,1,75,52l28,11.54c0-.34,0-.68,0-1A40.5,40.5,0,1,0,62.5,103c.35,0,.69,0,1,0Z"/><path fill="currentColor" d="M68.35,114.67a53.75,53.75,0,0,1-5.85.33A52.5,52.5,0,1,1,115,62.5a53.75,53.75,0,0,1-.33,5.85l9.56,4a63.32,63.32,0,0,0,.77-9.8A62.5,62.5,0,1,0,62.5,125a63.32,63.32,0,0,0,9.8-.77Z"/><path fill="#ffdf00" d="M122.26,125.24,109,156.57a5.62,5.62,0,0,1-10.37,0L63.08,70.42a5.62,5.62,0,0,1,7.34-7.34l86.1,35.52a5.62,5.62,0,0,1,0,10.37l-31.33,13.29A5.57,5.57,0,0,0,122.26,125.24Z"/><path fill="#c06d00ff" d="M98.6,156.52a5.62,5.62,0,0,0,10.37,0l13.29-31.33a5.39,5.39,0,0,1,1.1-1.67L64.2,64.41a5.54,5.54,0,0,0-1.12,6Z"/></svg> -->
+                        </button>
                         <button class="switch-button" id="switcher-groups">2</button>
                     </div>
                 </div>
@@ -44,7 +53,7 @@
         </header>
 
         <div class="gallery-place-holder">
-            <div class="gallery-part" id="gallery-grid">
+            <div class="gallery-part perfect-grid" id="gallery-grid">
             </div>
             <div class="gallery-part" id="viewer">
                 <div class="viewer-control-panel">
@@ -75,6 +84,11 @@
                     </div>
                     <ul class="animation-list">
                     </ul>
+                </div>
+                <div id="loading-indicator" class="hidden">
+                    <svg viewBox="0 0 100 100" width="60" height="60">
+                        <circle cx="50" cy="50" r="40" stroke="#00bfff" stroke-width="12" fill="none" stroke-linecap="round"/>
+                    </svg>
                 </div>
             </div>
         </div>

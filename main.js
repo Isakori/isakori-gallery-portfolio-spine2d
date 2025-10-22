@@ -4,10 +4,13 @@ const skeletonMenu = document.querySelector(".dropdown-menu");
 const animationList = document.querySelector(".animation-list");
 /* ----------------------------------------------------------------------------- 2 */
 const display_type_list = document.querySelector(".displayingbar");
+const gallery_styles = ["perfect-grid", "adaptive-flex", "cardfall"];
 /* ----------------------------------------------------------------------------- 3 */
 const filters = document.querySelectorAll(".filter-button");
 const filter_all = document.querySelector("#f-all");
 const other_filters = [...filters].filter(btn => btn !== filter_all);
+const filterState = { categories: new Set(["all"]), interactive: false };
+const interactiveFilter = document.querySelector("#switcher-interactive");
 /* ----------------------------------------------------------------------------- 4 */
 const viewer = document.querySelector("#viewer");
 const size_button = document.getElementById("viewer-size-button");
@@ -30,38 +33,116 @@ document.addEventListener('click', (e) => {
 });
 /* ----------------------------------------------------------------------------- 2 */
 display_type_list.addEventListener("click", (e) => {
-    if (e.target.closest(".display_type_buton")) {
-        const active = display_type_list.querySelector(".display_type_buton.active");
-        if (active) active.classList.remove("active");
-        e.target.closest(".display_type_buton").classList.add("active");
-    }
+    const button = e.target.closest(".display-type-buton");
+    if (!button) return;
+
+    // for smooth cards' translate, getting initial positions
+    const cards = [...gallery_grid.children];
+    const firstRects = new Map(cards.map(el => [el, el.getBoundingClientRect()]));
+
+    const active = display_type_list.querySelector(".display-type-buton.active");
+    if (active) active.classList.remove("active");
+    button.classList.add("active");
+
+    const displayType = button.id.replace("-button", "");
+    gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
+    gallery_grid.classList.add(displayType);
+
+    // moving the cards to their new position after DOM changing
+    floatingCards(cards, firstRects);
 });
+
+function floatingCards(cards, firstRects) {
+    const lastRects = new Map(cards.map(el => [el, el.getBoundingClientRect()]));
+    cards.forEach(el => {
+        const first = firstRects.get(el);
+        const last = lastRects.get(el);
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        el.style.transition = 'transform 0s';
+
+        requestAnimationFrame(() => {
+            el.style.transition = 'transform 0.4s ease';
+            el.style.transform = 'translate(0, 0)';
+        });
+    });
+}
 /* ----------------------------------------------------------------------------- 3 */
 filters.forEach(btn => {
     btn.addEventListener("click", () => {
+        const type = btn.dataset.filter;
+
         if (btn === filter_all) {
-            // Нажали "All" → сбрасываем всё и активируем только All
+            filterState.categories = new Set(["all"]);
+
             filters.forEach(b => b.classList.remove("active"));
             filter_all.classList.add("active");
         } else {
-            // Нажали на отдельный фильтр
+            filterState.categories.delete("all");
+            if (filterState.categories.has(type)) {
+                filterState.categories.delete(type);
+            } else {
+                filterState.categories.add(type);
+            }
+
             btn.classList.toggle("active");
             filter_all.classList.remove("active");
 
             const activeOthers = other_filters.filter(b => b.classList.contains("active"));
           
             if (activeOthers.length === 0) {
-              // Все сняты вручную → включаем All
-              filter_all.classList.add("active");
+                filterState.categories.add("all");
+
+                filter_all.classList.add("active");
             }
             // Проверка: если выбраны все отдельные фильтры → сбросить на All
             if (activeOthers.length === other_filters.length) {
-              other_filters.forEach(b => b.classList.remove("active"));
-              filter_all.classList.add("active");
+                filterState.categories = new Set(["all"]);
+
+                other_filters.forEach(b => b.classList.remove("active"));
+                filter_all.classList.add("active");
             }
         }
+
+        updateGallery();
     });
 });
+
+interactiveFilter.addEventListener("click", () => {
+    filterState.interactive = !filterState.interactive;
+    interactiveFilter.classList.toggle("active", filterState.interactive);
+
+    updateGallery();
+});
+
+function updateGallery() {
+    const allCards = document.querySelectorAll(".card-wrapper");
+
+    const cards = [...gallery_grid.children];
+    const firstRects = new Map(cards.map(el => [el, el.getBoundingClientRect()]));
+
+    allCards.forEach(card => {
+        const tags = card.dataset.tags.split(",");
+        let visible = false;
+
+        if (filterState.categories.has("all")) {
+            visible = true;
+        } else {
+            visible = [...filterState.categories].some(c => tags.includes(c));
+        }
+
+        if (filterState.interactive && !tags.includes("interactive")) {
+            visible = false;
+        }
+
+        card.style.display = visible ? "" : "none";
+    });
+
+    floatingCards(cards, firstRects);
+}
+
 /* ----------------------------------------------------------------------------- 4 */
 size_button.addEventListener("click", () => {
     const expanded = viewer.classList.toggle("expanded");
@@ -118,6 +199,8 @@ loadProjects().then((projects) => {
         const wrapper = document.createElement("div");
         wrapper.classList.add("card-wrapper");
 
+        wrapper.dataset.tags = project.tags;
+
         const card = document.createElement("div");
         card.classList.add("card");
         card.setAttribute("tabindex", "0");
@@ -128,8 +211,13 @@ loadProjects().then((projects) => {
         img.classList.add("card-img");
         img.draggable = false;
 
+        const label = document.createElement("div");
+        label.innerHTML = project.projectName;
+        label.classList.add("card-label");
+
         // Добавляем в DOM
         card.appendChild(img);
+        card.appendChild(label);
         wrapper.appendChild(card);
         gallery_grid.appendChild(wrapper);
 
@@ -184,7 +272,7 @@ viewport
         noDrag: true,
         factor: 1,
         percent: 0.5,
-        center: {x: viewport.screenWidth / 2, y: viewport.screenHeight / 2}
+        // center: {x: viewport.screenWidth / 2, y: viewport.screenHeight / 2}
     })
     .decelerate({ friction: 0.85 })
     .clamp({
@@ -270,6 +358,9 @@ function unloadCurrentProject(nextProject = null) {
 }
 
 function showInViewer(project) {
+    const loaderElement = document.getElementById("loading-indicator");
+    loaderElement.classList.remove("hidden");
+
     justUnwrapped = unwrapViewport();
     unloadCurrentProject(project);
 
@@ -277,7 +368,6 @@ function showInViewer(project) {
     const basePath = project.path;
     currentSpines = [];
 
-    // Сброс меню перед новой загрузкой
     skeletonMenu.innerHTML = "";
     animationList.innerHTML = "";
 
@@ -311,7 +401,7 @@ function showInViewer(project) {
             const li = document.createElement("li");
             const btn = document.createElement("button");
             btn.className = "dropdown-item";
-            btn.innerHTML = `${svgSkiletonIcon}${name}`;
+            btn.innerHTML = `${svgSkeletonIcon}${name}`;
             btn.addEventListener("click", () => selectSkeleton(spine));
             li.appendChild(btn);
             skeletonMenu.appendChild(li);
@@ -329,6 +419,7 @@ function showInViewer(project) {
                     padding: 0.5,
                     duration: 500
                 });
+                loaderElement.classList.add("hidden");
             }, offsetTimer);
     });
 }
@@ -401,8 +492,7 @@ function toggleAnimation(button, skeleton) {
 }
 
 // SVG шаблоны
-const svgSkiletonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7.157 2.207c.066 2.004 1.454 3.117 4.221 3.55c2.345.368 4.46.181 5.151-1.829C17.874.01 14.681.985 11.915.55S7.051-1.013 7.157 2.207m.831 8.23c.257 1.497 1.652 2.355 3.786 2.297c2.135-.059 3.728-.892 3.949-2.507c.409-2.988-1.946-1.832-4.08-1.774c-2.136.059-4.161-.952-3.655 1.984m2.778 6.852c.424 1.117 1.587 1.589 3.159 1.253c1.569-.335 2.656-.856 2.568-2.129c-.159-2.357-1.713-1.616-3.283-1.279c-1.571.333-3.272-.039-2.444 2.155m1.348 5.221c.123.943.939 1.5 2.215 1.49c1.279-.011 2.248-.515 2.412-1.525c.308-1.871-1.123-1.175-2.4-1.165c-1.28.01-2.47-.65-2.227 1.2"/></svg>`;
-const svgSkiletonIconOld = `<svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" d="M14 22V16.9612C14 16.3537 13.7238 15.7791 13.2494 15.3995L11.5 14M11.5 14L13 7.5M11.5 14L10 13M13 7.5L11 7M13 7.5L15.0426 10.7681C15.3345 11.2352 15.8062 11.5612 16.3463 11.6693L18 12M10 13L11 7M10 13L9.40011 16.2994C9.18673 17.473 8.00015 18.2 6.85767 17.8573L4 17M11 7L8.10557 8.44721C7.428 8.786 7 9.47852 7 10.2361V12M14.5 3.5C14.5 4.05228 14.0523 4.5 13.5 4.5C12.9477 4.5 12.5 4.05228 12.5 3.5C12.5 2.94772 12.9477 2.5 13.5 2.5C14.0523 2.5 14.5 2.94772 14.5 3.5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const svgSkeletonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7.157 2.207c.066 2.004 1.454 3.117 4.221 3.55c2.345.368 4.46.181 5.151-1.829C17.874.01 14.681.985 11.915.55S7.051-1.013 7.157 2.207m.831 8.23c.257 1.497 1.652 2.355 3.786 2.297c2.135-.059 3.728-.892 3.949-2.507c.409-2.988-1.946-1.832-4.08-1.774c-2.136.059-4.161-.952-3.655 1.984m2.778 6.852c.424 1.117 1.587 1.589 3.159 1.253c1.569-.335 2.656-.856 2.568-2.129c-.159-2.357-1.713-1.616-3.283-1.279c-1.571.333-3.272-.039-2.444 2.155m1.348 5.221c.123.943.939 1.5 2.215 1.49c1.279-.011 2.248-.515 2.412-1.525c.308-1.871-1.123-1.175-2.4-1.165c-1.28.01-2.47-.65-2.227 1.2"/></svg>`;
 const svgDropdownIcon = `<svg class="dropdown-icon" focusable="false" role="img" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"></path></svg>`;
 const svgDefaultPlay = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="none" d="M5.008 12.897a.644.644 0 0 1-.91-.227.719.719 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182l-6.677 4.306z"/></svg>`;
 const svgDefaultStop = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="none" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
@@ -518,3 +608,4 @@ function focusOnSpines(viewport, spinesArray, opts = {}) {
 
     requestAnimationFrame(animate);
 }
+
