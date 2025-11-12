@@ -8,8 +8,43 @@
                 "Junko"
             ],
             "tags": [
-                "character"
-            ]
+                "character",
+                "interactive"
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 103,
+                "constraints": 17,
+                "slots": 37,
+                "vertices": 989,
+                "triangles": 1184
+            },
+            "bounds": {
+                "drag_headpat": {
+                    "w": 120,
+                    "h": 10
+                },
+                "touch_dango" : {}
+            }
+        },
+        {
+            "id": 7,
+            "projectName": "Cursor VFX",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Blue Archive"
+            ],
+            "tags": [
+                "vfx"
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 63,
+                "constraints": 0,
+                "slots": 32,
+                "vertices": 128,
+                "triangles": 64
+            }
         }
     ],
     "Mike Mac": [
@@ -23,7 +58,15 @@
             ],
             "tags": [
                 "character"
-            ]
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 28,
+                "constraints": 12,
+                "slots": 17,
+                "vertices": 458,
+                "triangles": 576
+            }
         },
         {
             "id": 3,
@@ -34,7 +77,15 @@
             ],
             "tags": [
                 "character"
-            ]
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 49,
+                "constraints": 17,
+                "slots": 31,
+                "vertices": 618,
+                "triangles": 766
+            }
         },
         {
             "id": 4,
@@ -45,7 +96,15 @@
             ],
             "tags": [
                 "character"
-            ]
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 45,
+                "constraints": 9,
+                "slots": 27,
+                "vertices": 646,
+                "triangles": 883
+            }
         },
         {
             "id": 5,
@@ -56,7 +115,15 @@
             ],
             "tags": [
                 "character"
-            ]
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 24,
+                "constraints": 8,
+                "slots": 15,
+                "vertices": 227,
+                "triangles": 321
+            }
         },
         {
             "id": 6,
@@ -67,7 +134,15 @@
             ],
             "tags": [
                 "character"
-            ]
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 43,
+                "constraints": 6,
+                "slots": 24,
+                "vertices": 773,
+                "triangles": 919
+            }
         }
     ],
     "Anibal": []
