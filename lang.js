@@ -40,7 +40,7 @@ const translations = {
 };
 
 const titles = {
-    displaybar: {
+    displayingbar: {
         ru: "Тип отображения проектов",
         en: "Projects display type"
     },
@@ -71,12 +71,12 @@ function setLang(lang) {
 
     switch (lang) {
         case "en":
-            document.querySelector(".lang-en").classList.add("active");
-            document.querySelector(".lang-ru").classList.remove("active");
+            document.querySelectorAll(".lang-en").forEach(e => {e.classList.add("active")});
+            document.querySelectorAll(".lang-ru").forEach(e => {e.classList.remove("active")});
             break;
         case "ru":
-            document.querySelector(".lang-ru").classList.add("active");
-            document.querySelector(".lang-en").classList.remove("active");
+            document.querySelectorAll(".lang-ru").forEach(e => {e.classList.add("active")});
+            document.querySelectorAll(".lang-en").forEach(e => {e.classList.remove("active")});
             break;
         default:
             break;
@@ -87,12 +87,10 @@ function setLang(lang) {
 
 function updateTexts() {
     for (const key in translations) {
-        const el = document.getElementById(key);
-        if (el) el.innerHTML = translations[key][currentLang];
+        document.querySelectorAll(`.${key}`).forEach(e => { e.innerHTML = translations[key][currentLang] });
     }
     for (const key in titles) {
-        const el = document.getElementById(key);
-        if (el) el.title = titles[key][currentLang];
+        document.querySelectorAll(`.${key}`).forEach(e => {e.title = titles[key][currentLang]; });
     }
 }
 
