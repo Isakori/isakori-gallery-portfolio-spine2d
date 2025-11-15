@@ -5,23 +5,35 @@ const animationList = document.querySelector(".animation-list");
 const metricsPanel = document.querySelector(".metrics-panel");
 const metricsButton = document.querySelector(".metrics-button");
 const metricsList = document.querySelector(".metrics-list");
-const interactionSwitcher = document.querySelector("#viewport-interaction-switch");
+const interactionSwitcher = document.querySelector(".viewport-interaction-switch");
 /* ----------------------------------------------------------------------------- 2 */
 const display_type_list = document.querySelector(".displayingbar");
+const display_type_list1 = document.querySelector(".displayingbar.side");
 const gallery_styles = ["perfect-grid", "adaptive-flex", "cardfall"];
 let currentDisplayType = localStorage.getItem("displayType") || gallery_styles[0];
 /* ----------------------------------------------------------------------------- 3 */
 const filters = document.querySelectorAll(".filter-button");
+const filters1 = document.querySelectorAll(".filter-button1");
 const filter_all = document.querySelector("#f-all");
+const filter_all1 = document.querySelector("#f-all1");
 const other_filters = [...filters].filter(btn => btn !== filter_all);
 const filterState = { categories: new Set(["all"]), interactive: false };
-const interactiveFilter = document.querySelector("#switcher-interactive");
+const interactiveFilter = document.querySelector(".switcher-interactive");
+const interactiveFilter1 = document.querySelector(".switcher-interactive.side");
 /* ----------------------------------------------------------------------------- 4 */
-const guide_button = document.querySelector("#guide-button");
+const guide_button = document.querySelector(".guide-button");
 const guide_panel = document.querySelector(".guide-panel");
 const info_button = document.querySelector(".info-button");
 const info_panel = document.querySelector(".info-panel");
+const guide_button1 = document.querySelector(".guide-button.side");
+const guide_panel1 = document.querySelector(".guide-panel.side");
+const info_button1 = document.querySelector(".info-button.side");
+const info_panel1 = document.querySelector(".info-panel.side");
 /* ----------------------------------------------------------------------------- 5 */
+const sidebar_button = document.querySelector('.burger-button');
+const sidebar_close_button = document.querySelector('.sidebar-close-button');
+const sidebar = document.querySelector('.sidebar');
+/* ----------------------------------------------------------------------------- 6 */
 const viewer = document.querySelector("#viewer");
 const size_button = document.getElementById("viewer-size-button");
 const hide_button = document.getElementById("viewer-hide-button");
@@ -74,14 +86,45 @@ display_type_list.addEventListener("click", (e) => {
     const firstRects = new Map(cards.map(el => [el, el.getBoundingClientRect()]));
 
     const active = display_type_list.querySelector(".display-type-button.active");
-    if (active) active.classList.remove("active");
+    if (active) { 
+        active.classList.remove("active");
+        display_type_list1.querySelector(`${active.dataset.twin}`).classList.remove("active");
+    }
     button.classList.add("active");
+    display_type_list1.querySelector(`${button.dataset.twin}`).classList.add("active");
 
     const displayType = button.id.replace("-button", "");
     currentDisplayType = displayType;
     localStorage.setItem("displayType", currentDisplayType);
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
+
+    fixFlexGrid(`.${displayType}`);
+
+    floatingCards(cards, firstRects);
+});
+display_type_list1.addEventListener("click", (e) => {
+    const button = e.target.closest(".display-type-button");
+    if (!button) return;
+    
+    const cards = [...gallery_grid.children];
+    const firstRects = new Map(cards.map(el => [el, el.getBoundingClientRect()]));
+
+    const active = display_type_list1.querySelector(".display-type-button.active");
+    if (active) { 
+        active.classList.remove("active");
+        display_type_list.querySelector(`${active.dataset.twin}`).classList.remove("active");
+    }
+    button.classList.add("active");
+    display_type_list.querySelector(`${button.dataset.twin}`).classList.add("active");
+
+    const displayType = button.id.replace("-button1", "");
+    currentDisplayType = displayType;
+    localStorage.setItem("displayType", currentDisplayType);
+    gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
+    gallery_grid.classList.add(displayType);
+
+    fixFlexGrid(`.${displayType}`);
 
     floatingCards(cards, firstRects);
 });
@@ -91,6 +134,7 @@ function applyDisplayType(displayType) {
     if (active) active.classList.remove("active");
     const button = document.querySelector(`#${displayType}-button`);
     button.classList.add("active");
+    document.querySelector(`${button.dataset.twin}`).classList.add("active");
 
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
@@ -114,7 +158,49 @@ function floatingCards(cards, firstRects) {
         });
     });
 }
+
+function fixFlexGrid(selector) {
+    gallery_grid.querySelectorAll(".ghost").forEach(e => e.remove());
+
+    const container = document.querySelector(selector);
+    if (!container || selector !== ".perfect-grid") return;
+    
+    const children = [...container.children].filter(c => !c.classList.contains("ghost"));
+    
+    if (children.length === 0) return;
+    
+    const firstWidth = children[0].offsetWidth;
+    const containerWidth = container.clientWidth;
+    
+    const perRow = Math.floor(containerWidth / (firstWidth + 10));
+    if (perRow <= 1) return;
+    
+    const lastRowCount = children.length % perRow;
+    if (lastRowCount === 0) return;
+
+    const ghostCount = perRow - lastRowCount;
+
+    for (let i = 0; i < ghostCount; i++) {
+        const ghost = document.createElement("div");
+        ghost.className = "ghost";
+        ghost.style.width = firstWidth + "px";
+        ghost.style.height = "0px";
+        ghost.style.pointerEvents = "none";
+        ghost.style.opacity = "0";
+        container.appendChild(ghost);
+    }
+}
+
+window.addEventListener("load", () => fixFlexGrid(".perfect-grid"));
+window.addEventListener("resize", () => fixFlexGrid(".perfect-grid"));
+
 /* ----------------------------------------------------------------------------- 3 */
+filters1.forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(`${btn.dataset.twin}`).click();
+    });
+});
+
 filters.forEach(btn => {
     btn.addEventListener("click", () => {
         const type = btn.dataset.filter;
@@ -122,8 +208,12 @@ filters.forEach(btn => {
         if (btn === filter_all) {
             filterState.categories = new Set(["all"]);
 
-            filters.forEach(b => b.classList.remove("active"));
+            filters.forEach(b => {
+                b.classList.remove("active");
+                document.querySelector(`${b.dataset.twin}`).classList.remove("active");
+            });
             filter_all.classList.add("active");
+            filter_all1.classList.add("active");
         } else {
             filterState.categories.delete("all");
             if (filterState.categories.has(type)) {
@@ -133,7 +223,9 @@ filters.forEach(btn => {
             }
 
             btn.classList.toggle("active");
+            document.querySelector(`${btn.dataset.twin}`).classList.toggle("active");
             filter_all.classList.remove("active");
+            filter_all1.classList.remove("active");
 
             const activeOthers = other_filters.filter(b => b.classList.contains("active"));
           
@@ -141,13 +233,18 @@ filters.forEach(btn => {
                 filterState.categories.add("all");
 
                 filter_all.classList.add("active");
+                filter_all1.classList.add("active");
             }
             // Проверка: если выбраны все отдельные фильтры → сбросить на All
             if (activeOthers.length === other_filters.length) {
                 filterState.categories = new Set(["all"]);
 
-                other_filters.forEach(b => b.classList.remove("active"));
+                other_filters.forEach(b => {
+                    b.classList.remove("active");
+                    document.querySelector(`${b.dataset.twin}`).classList.remove("active");
+                });
                 filter_all.classList.add("active");
+                filter_all1.classList.add("active");
             }
         }
 
@@ -158,8 +255,12 @@ filters.forEach(btn => {
 interactiveFilter.addEventListener("click", () => {
     filterState.interactive = !filterState.interactive;
     interactiveFilter.classList.toggle("active", filterState.interactive);
+    interactiveFilter1.classList.toggle("active", filterState.interactive);
 
     updateGallery();
+});
+interactiveFilter1.addEventListener("click", () => {
+    interactiveFilter.click();
 });
 
 function updateGallery() {
@@ -209,8 +310,22 @@ document.addEventListener("click", e => {
         guide_panel.classList.remove("visible");
     }
 });
+guide_button1.addEventListener('click', e => {
+    e.stopPropagation();
+    guide_button1.classList.toggle("active");
+    guide_panel1.classList.toggle("visible");
+});
+info_button1.addEventListener('click', e => {
+    e.stopPropagation();
+    info_button1.classList.toggle("active");
+    info_panel1.classList.toggle("visible");
+});
 
 /* ----------------------------------------------------------------------------- 5 */
+sidebar_button.addEventListener('click', () => { sidebar.classList.add("open"); });
+sidebar_close_button.addEventListener('click', () => { sidebar.classList.remove("open"); });
+
+/* ----------------------------------------------------------------------------- 6 */
 size_button.addEventListener("click", () => {
     const expanded = viewer.classList.toggle("expanded");
     viewer.style.flexGrow = expanded ? 8 : 1;
@@ -358,6 +473,7 @@ loadProjects().then((projects) => {
 
         // Обработчик клика
         card.addEventListener("click", () => {
+            if (isLoading) return;
             showInViewer(project);
         });
 
@@ -365,6 +481,7 @@ loadProjects().then((projects) => {
         card.addEventListener("keydown", (event) => {
             if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
+                if (isLoading) return;
                 showInViewer(project);
             }
         });
@@ -382,7 +499,8 @@ const worldCenter = { x: worldSize.x / 2, y: worldSize.y / 2 };
 const app = new PIXI.Application({
     resizeTo: holder,
     transparent: true,
-    antialias: true
+    antialias: true,
+    resolution: window.devicePixelRatio || 1
 });
 holder.appendChild(app.view);
 /* ----------------------------------------------------------------------------------------- */
@@ -407,14 +525,14 @@ app.stage.addChild(particleLayer);
 /* ----------------------------------------------------------------------------------------- */
 viewport
     .drag({ mouseButtons: ['right', 'left'] })
-    .wheel({ /* масштабирование колесом */
+    .wheel({
         smooth: 50,
         percent: 0.05
     })
-    .pinch({ /* масштабирование пальцами */
+    .pinch({
         noDrag: true,
-        factor: 1,
-        percent: 0.5
+        factor: adjustToScale(1),
+        percent: adjustToScale(0.5)
     })
     .decelerate({ friction: 0.85 })
     .clamp({
@@ -422,8 +540,8 @@ viewport
         underflow: 'center'
     })
     .clampZoom({
-        minScale: 0.15,
-        maxScale: 4
+        minScale: adjustToScale(0.15),
+        maxScale: adjustToScale(4)
     })
 ;
 
@@ -491,6 +609,35 @@ viewport.moveCenter(worldCenter.x, worldCenter.y);
 
 /* ------------------------------------------------------------------------------------------- responsive viewport */
 
+function updateResolution() {
+  const ratio = window.devicePixelRatio || 1;
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  app.renderer.resolution = ratio;
+  app.renderer.resize(width, height);
+
+  const interaction = app.renderer.plugins.interaction;
+  interaction.resolution = ratio;
+
+  viewport
+    .pinch({
+        noDrag: true,
+        factor: adjustToScale(1),
+        percent: adjustToScale(0.5)
+    })
+    .clampZoom({
+        minScale: adjustToScale(0.15),
+        maxScale: adjustToScale(4)
+    })
+;
+}
+
+function adjustToScale(value) {
+    return value / app.renderer.resolution;
+}
+
 const resizeObserver = new ResizeObserver(() => {
     const { clientWidth, clientHeight } = holder;
     const viewportCenter = viewport.toWorld(
@@ -498,19 +645,17 @@ const resizeObserver = new ResizeObserver(() => {
         viewport.screenHeight / 2
     );
 
+    updateResolution();
     app.renderer.resize(clientWidth, clientHeight);
     viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
-    // vfxApp.renderer.resize(clientWidth, clientHeight);
     app.render();
-    // vfxApp.render();
     app.stop();
-    // vfxApp.stop();
     resizeTimeout = setTimeout(() => {
         app.start();
-        // vfxApp.start();
     }, 250);
 
     viewport.moveCenter(viewportCenter.x, viewportCenter.y);
+    fixFlexGrid(`.${currentDisplayType}`);
 });
 resizeObserver.observe(holder);
 
@@ -530,6 +675,7 @@ function unwrapViewport(){
 let currentSpines = [];
 let interactiveBounds = [];
 let activeTickers = [];
+let isLoading = false;
 let isInteractiveMode = false;
 let isPonterDown = false;
 let isAnimationPlaying = false;
@@ -577,6 +723,7 @@ function clearTickers() {
 function showInViewer(project) {
     const loaderElement = document.getElementById("loading-indicator");
     loaderElement.classList.remove("hidden");
+    isLoading = true;
 
     justUnwrapped = unwrapViewport();
     unloadCurrentProject(project);
@@ -850,6 +997,7 @@ function showInViewer(project) {
                     duration: 500
                 });
                 loaderElement.classList.add("hidden");
+                isLoading = false;
             }, offsetTimer);
     });
 }
@@ -1268,8 +1416,8 @@ function spawnClickParticle(x, y) {
                     config: {
                         scale: {
                             list: [
-                                { value: 0.33, time: 0 },
-                                { value: 0.8, time: 1 }
+                                { value: adjustToScale(0.33), time: 0 },
+                                { value: adjustToScale(0.8), time: 1 }
                             ],
                             minimumScaleMultiplier: 1,
                             ease: x => 1 - Math.pow(1 - x, 3)
@@ -1315,8 +1463,8 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         type: 'torus',
                         data: {
-                            radius: 45,
-                            innerRadius: 25,
+                            radius: adjustToScale(45),
+                            innerRadius: adjustToScale(25),
                             affectRotation: true
                         }
                     }
@@ -1372,9 +1520,9 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         scale: {
                             list: [
-                                { value: 0.0, time: 0 },
-                                { value: 0.5, time: 0.21 },
-                                { value: 0.2, time: 1.0 }
+                                { value: adjustToScale(0.0), time: 0 },
+                                { value: adjustToScale(0.5), time: 0.21 },
+                                { value: adjustToScale(0.2), time: 1.0 }
                             ],
                             minimumScaleMultiplier: 1
                         }
@@ -1385,8 +1533,8 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         speed: {
                             list: [
-                                { value: 150, time: 0 },
-                                { value: 40, time: 1 }
+                                { value: adjustToScale(150), time: 0 },
+                                { value: adjustToScale(40), time: 1 }
                             ],
                             ease: x => Math.sin((x * Math.PI) / 2)
                         }
@@ -1507,9 +1655,9 @@ function spawnArc(x, y, options = {}) {
     const arc = new SingleArcEffect(x, y, {
         duration: 0.53,
         color: 0xB8EEFF,
-        lineWidth: 3,
+        lineWidth: adjustToScale(3),
         rotationTotal: Math.PI,
-        radiusRange: [30, 34],
+        radiusRange: [adjustToScale(30), adjustToScale(34)],
         radiusGrow: 2.4,
         blendMode: PIXI.BLEND_MODES.ADD,
         ...options
@@ -1573,7 +1721,7 @@ app.ticker.add((delta) => {
         const t = i / points.length;
 
         // толщина уменьшается к хвосту
-        const thickness = baseThickness * t;
+        const thickness = adjustToScale(baseThickness * t);
         trailBlur.lineStyle(thickness, 0x249BFF, 1);
         trail.lineStyle(thickness, 0x008CFF, 1);
 
