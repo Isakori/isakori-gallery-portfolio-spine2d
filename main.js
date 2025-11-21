@@ -37,6 +37,8 @@ const sidebar = document.querySelector('.sidebar');
 const viewer = document.querySelector("#viewer");
 const size_button = document.getElementById("viewer-size-button");
 const hide_button = document.getElementById("viewer-hide-button");
+const viewer_states = ["closed", "minimized", "maximized"];
+let currentViewerState = viewer_states[0];
 
 const buttons = document.querySelectorAll('.bg-palette-button');
 const spinePalBtn = document.getElementById('spine-bg');
@@ -96,10 +98,14 @@ display_type_list.addEventListener("click", (e) => {
     const displayType = button.id.replace("-button", "");
     currentDisplayType = displayType;
     localStorage.setItem("displayType", currentDisplayType);
+
+    gallery_grid.classList.add("no-anim");
+
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
 
-    fixFlexGrid(`.${displayType}`);
+    void gallery_grid.offsetHeight;
+    gallery_grid.classList.remove("no-anim");
 
     floatingCards(cards, firstRects);
 });
@@ -124,8 +130,6 @@ display_type_list1.addEventListener("click", (e) => {
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
 
-    fixFlexGrid(`.${displayType}`);
-
     floatingCards(cards, firstRects);
 });
 
@@ -149,50 +153,21 @@ function floatingCards(cards, firstRects) {
         const dx = first.left - last.left;
         const dy = first.top - last.top;
 
-        el.style.transform = `translate(${dx}px, ${dy}px)`;
-        el.style.transition = 'transform 0s';
+        const mover = el.querySelector('.card');
+        // оптимизация галереи
+        // - перемещение содержимого элемента сетки, а не самого элемента
+
+        mover.style.transition = 'none';
+        mover.style.transform = `translate(${dx}px, ${dy}px)`;
+
+        mover.getBoundingClientRect(); 
 
         requestAnimationFrame(() => {
-            el.style.transition = 'transform 0.4s ease';
-            el.style.transform = 'translate(0, 0)';
+            mover.style.transition = 'transform 0.4s ease';
+            mover.style.transform = 'translate(0, 0)';
         });
     });
 }
-
-function fixFlexGrid(selector) {
-    gallery_grid.querySelectorAll(".ghost").forEach(e => e.remove());
-
-    const container = document.querySelector(selector);
-    if (!container || selector !== ".perfect-grid") return;
-    
-    const children = [...container.children].filter(c => !c.classList.contains("ghost"));
-    
-    if (children.length === 0) return;
-    
-    const firstWidth = children[0].offsetWidth;
-    const containerWidth = container.clientWidth;
-    
-    const perRow = Math.floor(containerWidth / (firstWidth + 10));
-    if (perRow <= 1) return;
-    
-    const lastRowCount = children.length % perRow;
-    if (lastRowCount === 0) return;
-
-    const ghostCount = perRow - lastRowCount;
-
-    for (let i = 0; i < ghostCount; i++) {
-        const ghost = document.createElement("div");
-        ghost.className = "ghost";
-        ghost.style.width = firstWidth + "px";
-        ghost.style.height = "0px";
-        ghost.style.pointerEvents = "none";
-        ghost.style.opacity = "0";
-        container.appendChild(ghost);
-    }
-}
-
-window.addEventListener("load", () => fixFlexGrid(".perfect-grid"));
-window.addEventListener("resize", () => fixFlexGrid(".perfect-grid"));
 
 /* ----------------------------------------------------------------------------- 3 */
 filters1.forEach(btn => {
@@ -327,15 +302,15 @@ sidebar_close_button.addEventListener('click', () => { sidebar.classList.remove(
 
 /* ----------------------------------------------------------------------------- 6 */
 size_button.addEventListener("click", () => {
-    const expanded = viewer.classList.toggle("expanded");
-    viewer.style.flexGrow = expanded ? 8 : 1;
+    const expanded = (currentViewerState === viewer_states[1]);
+    setViewerSize(expanded ? viewer_states[2] : viewer_states[1]);
 
     size_button.querySelector(".icon-expand").classList.toggle("hidden", expanded);
     size_button.querySelector(".icon-collapse").classList.toggle("hidden", !expanded);
 });
 hide_button.addEventListener("click", () => {
-    viewer.style.flexGrow = 0;
-    viewer.classList.remove("expanded");
+    setViewerSize(viewer_states[0]);
+
     size_button.querySelector(".icon-expand").classList.remove("hidden");
     size_button.querySelector(".icon-collapse").classList.add("hidden");
 
@@ -434,8 +409,8 @@ async function loadProjects() {
 }
 
 loadProjects().then((projects) => {
-    console.log("Всего проектов:", projects.length);
-    console.table(projects);
+    // console.log("Всего проектов:", projects.length);
+    // console.table(projects);
 
     projects.forEach(project => {
         const wrapper = document.createElement("div");
@@ -453,6 +428,7 @@ loadProjects().then((projects) => {
         img.src = `${project.path}/${project.projectName}${project.imagePostfix}`;
         img.classList.add("card-img");
         img.draggable = false;
+        img.loading = "lazy";
 
         const label = document.createElement("div");
         label.innerHTML = project.projectName;
@@ -492,8 +468,8 @@ loadProjects().then((projects) => {
 /* -------------------------------------------------------------------------------------------- CANVAS */
 
 const holder = document.getElementById("canvas-holder");
-const fullSizeVieport = { x: 2832, y: 1836 };
-const worldSize = { x: fullSizeVieport.x * 8, y: fullSizeVieport.y * 8 };
+const fullSizeViewport = { x: 2832, y: 1836 };
+const worldSize = { x: fullSizeViewport.x * 8, y: fullSizeViewport.y * 8 };
 const worldCenter = { x: worldSize.x / 2, y: worldSize.y / 2 };
 
 const app = new PIXI.Application({
@@ -531,8 +507,8 @@ viewport
     })
     .pinch({
         noDrag: true,
-        factor: adjustToScale(1),
-        percent: adjustToScale(0.5)
+        factor: adjustToScale(2),
+        percent: adjustToScale(1)
     })
     .decelerate({ friction: 0.85 })
     .clamp({
@@ -610,41 +586,40 @@ viewport.moveCenter(worldCenter.x, worldCenter.y);
 /* ------------------------------------------------------------------------------------------- responsive viewport */
 
 function updateResolution() {
-  const ratio = window.devicePixelRatio || 1;
+    const ratio = window.devicePixelRatio || 1;
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-  app.renderer.resolution = ratio;
-  app.renderer.resize(width, height);
+    app.renderer.resolution = ratio;
+    app.renderer.resize(width, height);
 
-  const interaction = app.renderer.plugins.interaction;
-  interaction.resolution = ratio;
+    const interaction = app.renderer.plugins.interaction;
+    interaction.resolution = ratio;
 
-  viewport
+    viewport
     .pinch({
-        noDrag: true,
-        factor: adjustToScale(1),
-        percent: adjustToScale(0.5)
+        factor: adjustToScale(2),
+        percent: adjustToScale(1)
     })
     .clampZoom({
         minScale: adjustToScale(0.15),
         maxScale: adjustToScale(4)
-    })
-;
+    });
 }
 
 function adjustToScale(value) {
     return value / app.renderer.resolution;
 }
 
-const resizeObserver = new ResizeObserver(() => {
-    const { clientWidth, clientHeight } = holder;
-    const viewportCenter = viewport.toWorld(
-        viewport.screenWidth / 2,
-        viewport.screenHeight / 2
-    );
+let resizeTimeout;
 
+/* const resizeObserver = new ResizeObserver(() => {
+    clearTimeout(resizeTimeout);
+    
+    const { clientWidth, clientHeight } = holder;
+    const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
+    
     updateResolution();
     app.renderer.resize(clientWidth, clientHeight);
     viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
@@ -655,18 +630,78 @@ const resizeObserver = new ResizeObserver(() => {
     }, 250);
 
     viewport.moveCenter(viewportCenter.x, viewportCenter.y);
-    fixFlexGrid(`.${currentDisplayType}`);
+}); */
+const resizeObserver = new ResizeObserver(() => {
+    clearTimeout(resizeTimeout);
+
+    const { clientWidth, clientHeight } = holder;
+    const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
+    updateResolution();
+    resizeTimeout = setTimeout(() => {
+        app.renderer.resize(clientWidth, clientHeight);
+        viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
+        viewport.moveCenter(viewportCenter.x, viewportCenter.y);
+    }, 200);
 });
+/* const resizeObserver = new ResizeObserver(() => {
+    clearTimeout(resizeTimeout);
+    
+    const { clientWidth, clientHeight } = holder;
+    const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
+    
+    updateResolution();
+    app.renderer.resize(clientWidth, clientHeight);
+    viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
+    app.render();
+    app.stop();
+    resizeTimeout = setTimeout(() => {
+        
+        app.render();
+        app.stop();
+        app.start();
+    }, 250);
+    
+    viewport.moveCenter(viewportCenter.x, viewportCenter.y);
+}); */
 resizeObserver.observe(holder);
 
 function unwrapViewport(){
-    const flexGrow = window.getComputedStyle(viewer).flexGrow;
-    if (parseFloat(flexGrow) === 0) {
-        viewer.style.flexGrow = 1;
+    if (currentViewerState === viewer_states[0]) {
+        setViewerSize(viewer_states[1]);
         return true;
     }
     return false;
 }
+
+function setViewerSize(state) {
+    viewer.classList.remove(currentViewerState);
+    // gallery_grid.classList.remove(currentViewerState);
+    viewer.classList.add(state);
+    // gallery_grid.classList.add(state);
+
+    /* const sizeDirection = viewer_states.indexOf(currentViewerState) - viewer_states.indexOf(state);
+
+    if (sizeDirection < 0) {
+        gallery_grid.style.transitionDelay = "";
+        viewer.style.transitionDelay = ".2s";
+    } else {
+        viewer.style.transitionDelay = "";
+        gallery_grid.style.transitionDelay = ".2s";
+    } */
+
+    currentViewerState = state;
+
+    const isViewerOpen = (currentViewerState === viewer_states[0]) ? false : true;
+    if (isViewerOpen) document.querySelector("header").classList.add("hide");
+    else document.querySelector("header").classList.remove("hide");
+
+    setTimeout(() => {
+        gallery_grid.style.transitionDelay = "";
+        viewer.style.transitionDelay = "";
+        updateResolution();
+    }, 200);
+}
+
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
@@ -725,7 +760,7 @@ function showInViewer(project) {
     loaderElement.classList.remove("hidden");
     isLoading = true;
 
-    justUnwrapped = unwrapViewport();
+    const justUnwrapped = unwrapViewport();
     unloadCurrentProject(project);
 
     const loader = new PIXI.Loader();
@@ -766,7 +801,7 @@ function showInViewer(project) {
                     const attachment = slot.getAttachment();
                     
                     if (attachment && attachment.constructor && attachment.constructor.name === 'BoundingBoxAttachment') {
-                        console.log('Bounding box найден:', attachment.name, 'в слоте', slot.data.name);
+                        // console.log('Bounding box найден:', attachment.name, 'в слоте', slot.data.name);
                     
                         let type = null;
                         let linkedBone = null;
@@ -775,9 +810,9 @@ function showInViewer(project) {
                             const targetBoneName = 'int_' + attachment.name.substring(5);
                             linkedBone = spine.skeleton.findBone(targetBoneName);
                             if (linkedBone) {
-                                console.log(`Для области ${attachment.name} найдена связанная кость: ${linkedBone.data.name}`);
+                                // console.log(`Для области ${attachment.name} найдена связанная кость: ${linkedBone.data.name}`);
                             } else {
-                                console.warn(`Для области ${attachment.name} не найдена кость ${targetBoneName}`);
+                                // console.warn(`Для области ${attachment.name} не найдена кость ${targetBoneName}`);
                             }
                         }
                         else if (attachment.name.startsWith('touch_')) {
@@ -801,9 +836,9 @@ function showInViewer(project) {
                 }
 
                 if (interactiveBounds.length === 0) {
-                    console.log('В проекте не найдено Bounding Box областей.');
+                    // console.log('В проекте не найдено Bounding Box областей.');
                 } else {
-                    console.log('Список найденных областей:', interactiveBounds);
+                    // console.log('Список найденных областей:', interactiveBounds);
                 }
             /* ------------------------------------------------------------------------------- */
                 app.stage.interactive = true;
@@ -849,7 +884,7 @@ function showInViewer(project) {
                                 const parent1 = bone.parent;
                                 const parent2 = parent1 ? parent1.parent : null;
                                 if (!parent1 || !parent2) {
-                                    console.warn('Недостаточный уровень родителей для ограничения.');
+                                    // console.warn('Недостаточный уровень родителей для ограничения.');
                                     continue;
                                 }
 
@@ -1197,8 +1232,8 @@ function focusOnSpines(viewport, spinesArray, opts = {}) {
         const curY = startCenter.y + (centerY - startCenter.y) * e;
         
         // применяем плавно
-        viewport.setZoom(curScale, true);
         viewport.moveCenter(curX, curY);
+        viewport.setZoom(curScale, true);
         
         if (t < 1) requestAnimationFrame(animate);
     }
@@ -1305,7 +1340,7 @@ function playTouchInteraction(spine, areaName) {
     const state = spine.state;
     const anim = state.data.skeletonData.findAnimation(animName);
     if (!anim) {
-        console.warn(`Анимация ${animName} не найдена.`);
+        // console.warn(`Анимация ${animName} не найдена.`);
         return;
     }
 
@@ -1332,7 +1367,9 @@ function switchInteractionMode(isActive) {
         document.querySelectorAll(".hideable").forEach(element => {
             element.style.display = "none";
             isInteractiveMode = true;
-            viewport.drag({ mouseButtons: 'right' });
+            viewport
+            .drag({ mouseButtons: 'right' })
+            .pinch({ noDrag: false });
             const animBtn = animationList.querySelector('[data-anim="idle"]');
             currentSpines.forEach(spine => {
                 toggleAnimation(animBtn, spine, false);
@@ -1345,7 +1382,9 @@ function switchInteractionMode(isActive) {
             currentSpines.forEach(spine => {
                 stopInteraction(spine);
             });
-            viewport.drag( { mouseButtons: ['right', 'left'] } );
+            viewport
+            .drag( { mouseButtons: ['right', 'left'] } )
+            .pinch({ noDrag: true });
         });
     }
     focusCamera();
@@ -1434,7 +1473,7 @@ function spawnClickParticle(x, y) {
             emitter.destroy();
         });
     } catch (e) {
-        console.warn('playOnceAndDestroy failed, fallback to manual stop:', e);
+        // console.warn('playOnceAndDestroy failed, fallback to manual stop:', e);
         emitter.emit = true;
         emitter.autoUpdate = true;
         setTimeout(() => {
