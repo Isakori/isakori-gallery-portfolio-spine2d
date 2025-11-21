@@ -99,13 +99,8 @@ display_type_list.addEventListener("click", (e) => {
     currentDisplayType = displayType;
     localStorage.setItem("displayType", currentDisplayType);
 
-    gallery_grid.classList.add("no-anim");
-
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
-
-    void gallery_grid.offsetHeight;
-    gallery_grid.classList.remove("no-anim");
 
     floatingCards(cards, firstRects);
 });
@@ -127,6 +122,7 @@ display_type_list1.addEventListener("click", (e) => {
     const displayType = button.id.replace("-button1", "");
     currentDisplayType = displayType;
     localStorage.setItem("displayType", currentDisplayType);
+
     gallery_styles.forEach(stl => gallery_grid.classList.remove(stl));
     gallery_grid.classList.add(displayType);
 
@@ -508,7 +504,8 @@ viewport
     .pinch({
         noDrag: true,
         factor: adjustToScale(2),
-        percent: adjustToScale(1)
+        percent: adjustToScale(1),
+        center: true
     })
     .decelerate({ friction: 0.85 })
     .clamp({
@@ -531,6 +528,7 @@ app.view.addEventListener('contextmenu', e => e.preventDefault());
 /* ----------------------------------------------------------------------------------------- */
 const bgTexture = PIXI.Texture.from("./images/viewport_spine_BG.png");
 const tiledBackground = new PIXI.TilingSprite(bgTexture, worldSize.x, worldSize.y);
+tiledBackground.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 tiledBackground.tilePosition.set(worldSize.x % 100 / 2, worldSize.y % 100 / 2); // centering against axis0
 const axisMarker = new PIXI.Graphics()
     .lineStyle(2, 0x111111)
@@ -588,11 +586,11 @@ viewport.moveCenter(worldCenter.x, worldCenter.y);
 function updateResolution() {
     const ratio = window.devicePixelRatio || 1;
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    // const width = window.innerWidth;
+    // const height = window.innerHeight;
 
     app.renderer.resolution = ratio;
-    app.renderer.resize(width, height);
+    // app.renderer.resize(width, height);
 
     const interaction = app.renderer.plugins.interaction;
     interaction.resolution = ratio;
@@ -614,55 +612,22 @@ function adjustToScale(value) {
 
 let resizeTimeout;
 
-/* const resizeObserver = new ResizeObserver(() => {
-    clearTimeout(resizeTimeout);
-    
-    const { clientWidth, clientHeight } = holder;
-    const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
-    
-    updateResolution();
-    app.renderer.resize(clientWidth, clientHeight);
-    viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
-    app.render();
-    app.stop();
-    resizeTimeout = setTimeout(() => {
-        app.start();
-    }, 250);
-
-    viewport.moveCenter(viewportCenter.x, viewportCenter.y);
-}); */
 const resizeObserver = new ResizeObserver(() => {
     clearTimeout(resizeTimeout);
 
-    const { clientWidth, clientHeight } = holder;
-    const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
-    updateResolution();
-    resizeTimeout = setTimeout(() => {
-        app.renderer.resize(clientWidth, clientHeight);
-        viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
-        viewport.moveCenter(viewportCenter.x, viewportCenter.y);
-    }, 200);
-});
-/* const resizeObserver = new ResizeObserver(() => {
-    clearTimeout(resizeTimeout);
-    
+    app.stop();
+
     const { clientWidth, clientHeight } = holder;
     const viewportCenter = viewport.toWorld(viewport.screenWidth / 2, viewport.screenHeight / 2);
     
     updateResolution();
     app.renderer.resize(clientWidth, clientHeight);
     viewport.resize(clientWidth, clientHeight, worldSize.x, worldSize.y);
-    app.render();
-    app.stop();
-    resizeTimeout = setTimeout(() => {
-        
-        app.render();
-        app.stop();
-        app.start();
-    }, 250);
-    
     viewport.moveCenter(viewportCenter.x, viewportCenter.y);
-}); */
+    
+    app.render();
+    app.start();
+});
 resizeObserver.observe(holder);
 
 function unwrapViewport(){

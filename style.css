@@ -1359,7 +1359,7 @@ header{
         background-color: var(--col-theme-card);
         backdrop-filter: var(--var-glass-filter-navbar);
         z-index: 2;
-        filter: drop-shadow(0 0 5px #00000040);
+        filter: none;
     }
     #viewer.closed {
         transform: translateY(100%);
