@@ -528,7 +528,7 @@ app.view.addEventListener('contextmenu', e => e.preventDefault());
 /* ----------------------------------------------------------------------------------------- */
 const bgTexture = PIXI.Texture.from("./images/viewport_spine_BG.png");
 const tiledBackground = new PIXI.TilingSprite(bgTexture, worldSize.x, worldSize.y);
-tiledBackground.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+bgTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 tiledBackground.tilePosition.set(worldSize.x % 100 / 2, worldSize.y % 100 / 2); // centering against axis0
 const axisMarker = new PIXI.Graphics()
     .lineStyle(2, 0x111111)
