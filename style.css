@@ -997,6 +997,7 @@ header{
     transition: transform ease .1s;
     z-index: 1;
     position: relative;
+    user-select: none;
 }
 .viewport-interaction-switch.unavaliable {
     display: none;

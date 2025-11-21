@@ -71,13 +71,21 @@ metricsButton.addEventListener('click', (e) => {
 interactionSwitcher.addEventListener('click', (e) => {
     interactionSwitcher.classList.toggle("active");
     switchInteractionMode(interactionSwitcher.classList.contains("active"));
+    hintContainer.visible = false;
 });
-interactionSwitcher.addEventListener('mouseenter', () => {
+interactionSwitcher.addEventListener('pointerdown', () => {
+    hintContainer.visible = true;
+});
+interactionSwitcher.addEventListener('pointerup', () => {
+    hintContainer.visible = false;
+});
+interactionSwitcher.addEventListener('mouseover', () => {
     hintContainer.visible = true;
 });
 interactionSwitcher.addEventListener('mouseleave', () => {
     hintContainer.visible = false;
 });
+interactionSwitcher.addEventListener('contextmenu', e => e.preventDefault());
 
 /* ----------------------------------------------------------------------------- 2 */
 display_type_list.addEventListener("click", (e) => {
@@ -501,12 +509,6 @@ viewport
         smooth: 50,
         percent: 0.05
     })
-    .pinch({
-        noDrag: false,
-        factor: adjustToScale(2),
-        percent: adjustToScale(1),
-        center: true
-    })
     .decelerate({ friction: 0.85 })
     .clamp({
         direction: 'all',
@@ -515,8 +517,8 @@ viewport
     .clampZoom({
         minScale: adjustToScale(0.15),
         maxScale: adjustToScale(4)
-    })
-;
+});
+setupTouchControls(viewport, app);
 
 holder.addEventListener("wheel", e => {
     if (e.target === app.view) {
@@ -585,23 +587,12 @@ viewport.moveCenter(worldCenter.x, worldCenter.y);
 
 function updateResolution() {
     const ratio = window.devicePixelRatio || 1;
-
-    // const width = window.innerWidth;
-    // const height = window.innerHeight;
-
     app.renderer.resolution = ratio;
-    // app.renderer.resize(width, height);
 
     const interaction = app.renderer.plugins.interaction;
     interaction.resolution = ratio;
 
     viewport
-    .pinch({
-        noDrag: false,
-        factor: adjustToScale(2),
-        percent: adjustToScale(1),
-        center: true
-    })
     .clampZoom({
         minScale: adjustToScale(0.15),
         maxScale: adjustToScale(4)
@@ -642,31 +633,13 @@ function unwrapViewport(){
 
 function setViewerSize(state) {
     viewer.classList.remove(currentViewerState);
-    // gallery_grid.classList.remove(currentViewerState);
     viewer.classList.add(state);
-    // gallery_grid.classList.add(state);
-
-    /* const sizeDirection = viewer_states.indexOf(currentViewerState) - viewer_states.indexOf(state);
-
-    if (sizeDirection < 0) {
-        gallery_grid.style.transitionDelay = "";
-        viewer.style.transitionDelay = ".2s";
-    } else {
-        viewer.style.transitionDelay = "";
-        gallery_grid.style.transitionDelay = ".2s";
-    } */
 
     currentViewerState = state;
 
     const isViewerOpen = (currentViewerState === viewer_states[0]) ? false : true;
     if (isViewerOpen) document.querySelector("header").classList.add("hide");
     else document.querySelector("header").classList.remove("hide");
-
-    setTimeout(() => {
-        gallery_grid.style.transitionDelay = "";
-        viewer.style.transitionDelay = "";
-        updateResolution();
-    }, 200);
 }
 
 
@@ -776,11 +749,11 @@ function showInViewer(project) {
                             type = 'drag';
                             const targetBoneName = 'int_' + attachment.name.substring(5);
                             linkedBone = spine.skeleton.findBone(targetBoneName);
-                            if (linkedBone) {
-                                // console.log(`Для области ${attachment.name} найдена связанная кость: ${linkedBone.data.name}`);
+                            /* if (linkedBone) {
+                                console.log(`Для области ${attachment.name} найдена связанная кость: ${linkedBone.data.name}`);
                             } else {
-                                // console.warn(`Для области ${attachment.name} не найдена кость ${targetBoneName}`);
-                            }
+                                console.warn(`Для области ${attachment.name} не найдена кость ${targetBoneName}`);
+                            } */
                         }
                         else if (attachment.name.startsWith('touch_')) {
                             type = 'touch';
@@ -802,11 +775,11 @@ function showInViewer(project) {
                     }
                 }
 
-                if (interactiveBounds.length === 0) {
-                    // console.log('В проекте не найдено Bounding Box областей.');
+                /* if (interactiveBounds.length === 0) {
+                    console.log('В проекте не найдено Bounding Box областей.');
                 } else {
-                    // console.log('Список найденных областей:', interactiveBounds);
-                }
+                    console.log('Список найденных областей:', interactiveBounds);
+                } */
             /* ------------------------------------------------------------------------------- */
                 app.stage.interactive = true;
                 app.stage.removeAllListeners();
@@ -1334,10 +1307,7 @@ function switchInteractionMode(isActive) {
         document.querySelectorAll(".hideable").forEach(element => {
             element.style.display = "none";
             isInteractiveMode = true;
-            viewport
-            .drag({ mouseButtons: 'right' })
-            // .pinch({ noDrag: false })
-            ;
+            viewport.drag({ mouseButtons: 'right' });
             const animBtn = animationList.querySelector('[data-anim="idle"]');
             currentSpines.forEach(spine => {
                 toggleAnimation(animBtn, spine, false);
@@ -1350,10 +1320,7 @@ function switchInteractionMode(isActive) {
             currentSpines.forEach(spine => {
                 stopInteraction(spine);
             });
-            viewport
-            .drag( { mouseButtons: ['right', 'left'] } )
-            // .pinch({ noDrag: true })
-            ;
+            viewport.drag( { mouseButtons: ['right', 'left'] } );
         });
     }
     focusCamera();
