@@ -79,6 +79,9 @@ interactionSwitcher.addEventListener('pointerdown', () => {
 interactionSwitcher.addEventListener('pointerup', () => {
     hintContainer.visible = false;
 });
+interactionSwitcher.addEventListener('pointerupoutside', () => {
+    hintContainer.visible = false;
+});
 interactionSwitcher.addEventListener('mouseover', () => {
     hintContainer.visible = true;
 });
@@ -1706,3 +1709,4 @@ app.ticker.add((delta) => {
         trail.lineTo(p1.x, p1.y);
     }
 });
+
