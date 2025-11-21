@@ -502,7 +502,7 @@ viewport
         percent: 0.05
     })
     .pinch({
-        noDrag: true,
+        noDrag: false,
         factor: adjustToScale(2),
         percent: adjustToScale(1),
         center: true
@@ -597,8 +597,10 @@ function updateResolution() {
 
     viewport
     .pinch({
+        noDrag: false,
         factor: adjustToScale(2),
-        percent: adjustToScale(1)
+        percent: adjustToScale(1),
+        center: true
     })
     .clampZoom({
         minScale: adjustToScale(0.15),
@@ -1334,7 +1336,8 @@ function switchInteractionMode(isActive) {
             isInteractiveMode = true;
             viewport
             .drag({ mouseButtons: 'right' })
-            .pinch({ noDrag: false });
+            // .pinch({ noDrag: false })
+            ;
             const animBtn = animationList.querySelector('[data-anim="idle"]');
             currentSpines.forEach(spine => {
                 toggleAnimation(animBtn, spine, false);
@@ -1349,7 +1352,8 @@ function switchInteractionMode(isActive) {
             });
             viewport
             .drag( { mouseButtons: ['right', 'left'] } )
-            .pinch({ noDrag: true });
+            // .pinch({ noDrag: true })
+            ;
         });
     }
     focusCamera();
