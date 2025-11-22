@@ -1711,86 +1711,110 @@ app.ticker.add((delta) => {
 
 
 
-let lastTouch = null;
-    let lastDist = 0;
-    let twoFinger = false;
+// ===================
+// ТОЛЬКО ТАЧ
+// ===================
+let lastDist = 0;
+let lastMid = null;
+let isTwoFinger = false;
+let singleTouchStart = null;
 
-    const el = app.view; // сам canvas
+const el = app.view;
 
-    // touchstart
+// touchstart
 el.addEventListener('touchstart', (ev) => {
     if (ev.touches.length === 1) {
-        twoFinger = false;
-
-        lastTouch = {
+        // один палец → ЛКМ
+        isTwoFinger = false;
+        singleTouchStart = {
             x: ev.touches[0].clientX,
-            y: ev.touches[0].clientY
+            y: ev.touches[0].clientY,
+            time: performance.now()
         };
     }
 
     if (ev.touches.length === 2) {
-            twoFinger = true;
-
-            lastDist = getDist(ev);
-            lastMid = getMid(ev);
+        isTwoFinger = true;
+        lastDist = getDist(ev);
+        lastMid = getMid(ev);
+        singleTouchStart = null; // один палец больше не считается
     }
 }, { passive: false });
 
-
-    // touchmove
+// touchmove
 el.addEventListener('touchmove', (ev) => {
-    ev.preventDefault();
+    // Если два пальца — окно не скроллим
+    if (ev.touches.length === 2) ev.preventDefault();
 
-        // два пальца → zoom + pan
-    if (twoFinger && ev.touches.length === 2) {
-            const dist = getDist(ev);
-            const mid = getMid(ev);
+    if (isTwoFinger && ev.touches.length === 2) {
+        const dist = getDist(ev);
+        const mid = getMid(ev);
 
-            const scale = viewport.scale.x * (dist / lastDist);
+        // масштаб
+        const scale = viewport.scale.x * (dist / lastDist);
+        viewport.setZoom(scale, true);
 
-            // clampZoom
-            // const clamped = Math.min(5, Math.max(0.25, scale));
-            // const ratio = clamped / viewport.scale.x;
+        // панорамирование камеры
+        viewport.x += mid.x - lastMid.x;
+        viewport.y += mid.y - lastMid.y;
 
-            // zoomToCenter(viewport, ratio);
-            viewport.setZoom(scale, true);
-
-            // двухпальцевый pan
-            viewport.x += mid.x - lastMid.x;
-            viewport.y += mid.y - lastMid.y;
-
-            lastDist = dist;
-            lastMid = mid;
-
-            return;
+        lastDist = dist;
+        lastMid = mid;
     }
-
-    // drag
-    if (twoFinger && lastTouch) {
-        const nx = ev.touches[0].clientX;
-        const ny = ev.touches[0].clientY;
-
-        const dx = nx - lastTouch.x;
-        const dy = ny - lastTouch.y;
-
-        viewport.x += dx;
-        viewport.y += dy;
-
-        lastTouch.x = nx;
-        lastTouch.y = ny;
-    }
-
 }, { passive: false });
 
-el.addEventListener('touchend', () => {
-    lastTouch = null;
-    twoFinger = false;
+// touchend
+el.addEventListener('touchend', (ev) => {
+    // Если это окончание одиночного касания — генерируем ЛКМ-клик
+    if (!isTwoFinger && singleTouchStart) {
+        const dt = performance.now() - singleTouchStart.time;
+
+        // минимальное движение ⇒ клик
+        const dx = (ev.changedTouches[0].clientX - singleTouchStart.x);
+        const dy = (ev.changedTouches[0].clientY - singleTouchStart.y);
+        const moved = Math.hypot(dx, dy);
+
+        if (moved < 10 && dt < 300) {
+            // создаём synthetic left mouse click
+            const rect = el.getBoundingClientRect();
+            const x = singleTouchStart.x - rect.left;
+            const y = singleTouchStart.y - rect.top;
+
+            const down = new PointerEvent("pointerdown", {
+                pointerType: "mouse",
+                button: 0,
+                clientX: singleTouchStart.x,
+                clientY: singleTouchStart.y
+            });
+            const up = new PointerEvent("pointerup", {
+                pointerType: "mouse",
+                button: 0,
+                clientX: singleTouchStart.x,
+                clientY: singleTouchStart.y
+            });
+
+            el.dispatchEvent(down);
+            el.dispatchEvent(up);
+        }
+    }
+
+    // сброс
+    if (ev.touches.length === 0) {
+        isTwoFinger = false;
+        singleTouchStart = null;
+    }
 });
 
-// Утилиты
+// ------------------
+// УТИЛИТЫ
+// ------------------
+
 function getDist(ev) {
     const t1 = ev.touches[0], t2 = ev.touches[1];
-    return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    return Math.hypot(
+        t1.clientX - t2.clientX,
+        t1.clientY - t2.clientY
+    );
 }
 
 function getMid(ev) {
