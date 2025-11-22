@@ -1716,119 +1716,173 @@ app.ticker.add((delta) => {
 // ===================
 // ТОЛЬКО ТАЧ
 // ===================
-let lastDist = 0;
-let lastMid = null;
-let isTwoFinger = false;
-let singleTouchStart = null;
+(function setupTouchPointers(app, viewport) {
+    const el = app.view; // canvas
+    const pointers = new Map(); // pointerId -> {x,y}
+    let singlePointerInfo = null; // {id, startX, startY, startTime}
+    let dragPausedForTouch = false;
+    let lastDist = 0;
+    let lastMid = null;
 
-const el = app.view;
-
-// touchstart
-el.addEventListener('touchstart', (ev) => {
-    viewport.plugins.pause('drag');
-    if (ev.touches.length === 1) {
-        // один палец → ЛКМ
-        isTwoFinger = false;
-        singleTouchStart = {
-            x: ev.touches[0].clientX,
-            y: ev.touches[0].clientY,
-            time: performance.now()
-        };
+    // helper
+    function getDistance(p1, p2) {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        return Math.hypot(dx, dy);
+    }
+    function midPoint(p1, p2) {
+        return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
     }
 
-    if (ev.touches.length === 2) {
-        isTwoFinger = true;
-        lastDist = getDist(ev);
-        lastMid = getMid(ev);
-        singleTouchStart = null; // один палец больше не считается
+    // Pause drag plugin for touch input
+    function pauseDragForTouch() {
+        if (!dragPausedForTouch && viewport.plugins && viewport.plugins.pause) {
+            try { viewport.plugins.pause('drag'); } catch(e){ /* fallback */ }
+            dragPausedForTouch = true;
+        }
     }
-}, { passive: false });
-
-// touchmove
-el.addEventListener('touchmove', (ev) => {
-    // Если два пальца — окно не скроллим
-    if (ev.touches.length === 2) ev.preventDefault();
-
-    if (isTwoFinger && ev.touches.length === 2) {
-        const dist = getDist(ev);
-        const mid = getMid(ev);
-
-        // масштаб
-        const scale = viewport.scale.x * (dist / lastDist);
-        viewport.setZoom(scale, true);
-
-        // панорамирование камеры
-        viewport.x += mid.x - lastMid.x;
-        viewport.y += mid.y - lastMid.y;
-
-        lastDist = dist;
-        lastMid = mid;
-    }
-}, { passive: false });
-
-// touchend
-el.addEventListener('touchend', (ev) => {
-    // Если это окончание одиночного касания — генерируем ЛКМ-клик
-    if (!isTwoFinger && singleTouchStart) {
-        const dt = performance.now() - singleTouchStart.time;
-
-        // минимальное движение ⇒ клик
-        const dx = (ev.changedTouches[0].clientX - singleTouchStart.x);
-        const dy = (ev.changedTouches[0].clientY - singleTouchStart.y);
-        const moved = Math.hypot(dx, dy);
-
-        if (moved < 10 && dt < 300) {
-            // создаём synthetic left mouse click
-            const rect = el.getBoundingClientRect();
-            const x = singleTouchStart.x - rect.left;
-            const y = singleTouchStart.y - rect.top;
-
-            const down = new PointerEvent("pointerdown", {
-                pointerType: "mouse",
-                button: 0,
-                clientX: singleTouchStart.x,
-                clientY: singleTouchStart.y
-            });
-            const up = new PointerEvent("pointerup", {
-                pointerType: "mouse",
-                button: 0,
-                clientX: singleTouchStart.x,
-                clientY: singleTouchStart.y
-            });
-
-            el.dispatchEvent(down);
-            el.dispatchEvent(up);
+    function resumeDragAfterTouch() {
+        if (dragPausedForTouch && viewport.plugins && viewport.plugins.resume) {
+            try { viewport.plugins.resume('drag'); } catch(e){ /* fallback */ }
+            dragPausedForTouch = false;
         }
     }
 
-    // сброс
-    if (ev.touches.length === 0) {
-        isTwoFinger = false;
-        singleTouchStart = null;
-        viewport.plugins.resume('drag');
+    // synth dispatch to canvas so Pixi's interaction sees it as mouse-like pointer
+    function synthPointer(type, clientX, clientY, pointerId = 1) {
+        // pointerType "mouse" makes Pixi treat it like normal mouse input for existing handlers
+        const ev = new PointerEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            pointerId,
+            pointerType: 'mouse', // emulate mouse for compatibility with existing mouse handlers
+            isPrimary: true,
+            clientX,
+            clientY,
+            button: 0
+        });
+        el.dispatchEvent(ev);
     }
-});
 
-el.addEventListener('touchcancel', () => {
-    viewport.plugins.resume('drag');
-});
+    // pointerdown
+    el.addEventListener('pointerdown', (e) => {
+        // if it's mouse, do nothing — let viewport handle it
+        if (e.pointerType === 'mouse') return;
 
-// ------------------
-// УТИЛИТЫ
-// ------------------
+        // touch pointer
+        const id = e.pointerId;
+        pointers.set(id, { x: e.clientX, y: e.clientY });
 
-function getDist(ev) {
-    const t1 = ev.touches[0], t2 = ev.touches[1];
-    return Math.hypot(
-        t1.clientX - t2.clientX,
-        t1.clientY - t2.clientY
-    );
-}
+        // capture pointer (so we keep getting moves)
+        try { (e.target || el).setPointerCapture(id); } catch (err) {}
 
-function getMid(ev) {
-    const t1 = ev.touches[0], t2 = ev.touches[1];
-    return {
-        x: (t1.clientX + t2.clientX) / 2,
-        y: (t1.clientY + t2.clientY) / 2
-    };
-}
+        if (pointers.size === 1) {
+            // SINGLE TOUCH: record for possible click / drag-as-interaction
+            singlePointerInfo = { id, startX: e.clientX, startY: e.clientY, startTime: performance.now() };
+
+            // Pause viewport drag so it doesn't steal events (we will resume on pointerup when map empty)
+            pauseDragForTouch();
+
+            // Fire synthetic pointerdown as mouse to let interactive objects receive "mousedown" / "pointerdown"
+            synthPointer('pointerdown', e.clientX, e.clientY, id);
+        } else if (pointers.size === 2) {
+            // SECOND pointer: begin pinch+pan mode
+            // cancel potential synthetic single click down because now it's multi-touch
+            // we can also send pointercancel/up if needed
+            // init pinch
+            const arr = Array.from(pointers.values());
+            lastDist = getDistance(arr[0], arr[1]);
+            lastMid = midPoint(arr[0], arr[1]);
+
+            // If we previously dispatched pointerdown as a single-click, synthesize a pointerup to close that gesture
+            // (some UI expect pointerup)
+            synthPointer('pointerup', singlePointerInfo.startX, singlePointerInfo.startY, singlePointerInfo.id);
+            singlePointerInfo = null;
+        }
+    }, { passive: false });
+
+    // pointermove
+    el.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'mouse') return; // let viewport handle mouse
+
+        const id = e.pointerId;
+        if (!pointers.has(id)) return;
+        pointers.set(id, { x: e.clientX, y: e.clientY });
+
+        if (pointers.size === 1) {
+            // single finger move: forward as pointermove (so interactive drag/hover works)
+            // synth as mouse pointermove
+            synthPointer('pointermove', e.clientX, e.clientY, id);
+        } else if (pointers.size === 2) {
+            // two finger pinch+pan
+            // compute new dist and mid
+            const vals = Array.from(pointers.values());
+            const p1 = vals[0], p2 = vals[1];
+            const dist = getDistance(p1, p2);
+            const mid = midPoint(p1, p2);
+
+            // zoom factor relative to lastDist
+            if (lastDist > 0) {
+                const scale = viewport.scale.x * (dist / lastDist);
+                // use your preferred clamp limits via viewport.setZoom or your clamp plugin will correct
+                viewport.setZoom(scale, true);
+            }
+
+            // pan by change of midpoint
+            const dx = mid.x - lastMid.x;
+            const dy = mid.y - lastMid.y;
+            viewport.x += dx;
+            viewport.y += dy;
+
+            lastDist = dist;
+            lastMid = mid;
+        }
+
+        e.preventDefault && e.preventDefault();
+    }, { passive: false });
+
+    // pointerup / cancel
+    function handlePointerUp(e) {
+        if (e.pointerType === 'mouse') return;
+
+        const id = e.pointerId;
+        // if pointer wasn't tracked — ignore
+        if (pointers.has(id)) pointers.delete(id);
+        try { (e.target || el).releasePointerCapture(id); } catch (err) {}
+
+        if (pointers.size === 0) {
+            // ended all touches
+            // if we had a recorded singleTouch and movement small & short time => treat as click
+            if (singlePointerInfo) {
+                const dt = performance.now() - singlePointerInfo.startTime;
+                // small movement threshold
+                const moved = Math.hypot((e.clientX - singlePointerInfo.startX), (e.clientY - singlePointerInfo.startY));
+                if (moved < 10 && dt < 350) {
+                    // synth click: pointerup already will be dispatched below; if needed, can also dispatch 'click'
+                    // send final pointerup to complete interaction
+                    synthPointer('pointerup', e.clientX, e.clientY, singlePointerInfo.id);
+                    // optionally send click event for DOM handlers: (not always necessary for Pixi)
+                    el.dispatchEvent(new MouseEvent('click', { clientX: e.clientX, clientY: e.clientY }));
+                } else {
+                    // ended drag-like single-touch — send pointerup
+                    synthPointer('pointerup', e.clientX, e.clientY, singlePointerInfo.id);
+                }
+            }
+            singlePointerInfo = null;
+
+            // resume drag plugin after touches finished
+            resumeDragAfterTouch();
+        } else if (pointers.size === 1) {
+            // if one of two fingers lifted, we should continue treating remaining as single
+            // reset singlePointerInfo to existing pointer
+            const remaining = Array.from(pointers.entries())[0];
+            singlePointerInfo = { id: remaining[0], startX: remaining[1].x, startY: remaining[1].y, startTime: performance.now() };
+            // also reset pinch state
+            lastDist = 0;
+            lastMid = null;
+        }
+    }
+    el.addEventListener('pointerup', handlePointerUp, { passive: false });
+    el.addEventListener('pointercancel', handlePointerUp, { passive: false });
+
+})(app, viewport);

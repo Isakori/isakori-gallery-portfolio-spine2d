@@ -818,6 +818,7 @@ header{
     display: flex;
     width: 100%;
     z-index: 0;
+    touch-action: none;
 }
 
 .viewer-control-panel{
