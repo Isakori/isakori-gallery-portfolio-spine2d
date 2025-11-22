@@ -507,8 +507,7 @@ const particleLayer = new PIXI.Container();
 app.stage.addChild(particleLayer);
 /* ----------------------------------------------------------------------------------------- */
 viewport
-    .drag({ mouseButtons: ['right', 'left'],
-        ignoreKeyToPressOnTouch: false
+    .drag({ mouseButtons: ['right', 'left']
      })
     .wheel({
         smooth: 50,
@@ -1726,6 +1725,7 @@ const el = app.view;
 
 // touchstart
 el.addEventListener('touchstart', (ev) => {
+    viewport.plugins.pause('drag');
     if (ev.touches.length === 1) {
         // один палец → ЛКМ
         isTwoFinger = false;
@@ -1805,7 +1805,12 @@ el.addEventListener('touchend', (ev) => {
     if (ev.touches.length === 0) {
         isTwoFinger = false;
         singleTouchStart = null;
+        viewport.plugins.resume('drag');
     }
+});
+
+el.addEventListener('touchcancel', () => {
+    viewport.plugins.resume('drag');
 });
 
 // ------------------
