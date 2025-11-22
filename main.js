@@ -507,7 +507,9 @@ const particleLayer = new PIXI.Container();
 app.stage.addChild(particleLayer);
 /* ----------------------------------------------------------------------------------------- */
 viewport
-    .drag({ mouseButtons: ['right', 'left'] })
+    .drag({ mouseButtons: ['right', 'left'],
+        ignoreKeyToPressOnTouch: false
+     })
     .wheel({
         smooth: 50,
         percent: 0.05
@@ -521,6 +523,7 @@ viewport
         minScale: adjustToScale(0.15),
         maxScale: adjustToScale(4)
 });
+viewport.plugins.remove('pinch');
 
 holder.addEventListener("wheel", e => {
     if (e.target === app.view) {
