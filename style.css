@@ -787,7 +787,7 @@ header{
 /* -------------------------------------------------------------- viewport */
 
 #viewer{
-    will-change: opacity transform;
+    will-change: opacity, transform;
     display: flex;
     transition: opacity ease .2s, transform ease .2s;
     position: sticky;
@@ -821,9 +821,29 @@ header{
     touch-action: none;
 }
 
+.hidden-panel {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    will-change: transform;
+}
+
+.hidden-panel-close-button {
+    display: none;
+}
+
+.viewport-functions {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
 .viewer-control-panel{
     position: absolute;
-    top: 1rem;
+    top: calc(3rem + 60px);
     left: 1rem;
     display: flex;
     flex-direction: column;
@@ -835,6 +855,9 @@ header{
 .viewer-size-panel {
     display: flex;
     gap: 1rem;
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
 }
 
 .background-palette {
@@ -897,7 +920,7 @@ header{
     flex-direction: column;
     color: var(--col-theme-text);
     background-color: var(--col-theme-accent);
-    margin-top: 2rem;
+    margin-top: 1rem;
     border-radius: 50px;
     width: 42px;
     height: 42px;
@@ -974,13 +997,6 @@ header{
     pointer-events: auto;
 }
 
-.play-control {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    display: flex;
-    pointer-events: none;
-}
 .viewport-interaction-switch {
     will-change: transform;
     display: flex;
@@ -989,6 +1005,8 @@ header{
     height: 56px;
     width: 56px;
     margin-right: 2rem;
+    top: 1rem;
+    right: calc(1rem + 180px);
     border: none;
     cursor: pointer;
     border-radius: 999px;
@@ -997,7 +1015,7 @@ header{
     color: var(--col-theme-text);
     transition: transform ease .1s;
     z-index: 1;
-    position: relative;
+    position: absolute;
     user-select: none;
 }
 .viewport-interaction-switch.unavaliable {
@@ -1020,7 +1038,7 @@ header{
     width: 80px;
     border-radius: 6px;
     transform: skewX(-10deg);
-    position: relative;
+    right: 1rem;
     > svg {
         transform: skewX(10deg);
     };
@@ -1032,15 +1050,18 @@ header{
     transform: scale(0.9);
 }
 .animation-panel{
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: 180px;
     z-index: 2;
 }
 
 .anim-drop-button-holder{
     display: flex;
-    width: 180px;
+    width: 100%;
     justify-content: flex-start;
     align-items: center;
     position: relative;
@@ -1083,7 +1104,7 @@ header{
     border-color: var(--col-theme-accent);
     transition: background-color ease var(--var-animation-duration) 0s, opacity ease .15s;
     box-shadow: 0 0 10px #000000ff;
-    width: fit-content;
+    width: 10rem;
     min-width: 10rem;
     max-width: 15rem;
     pointer-events: none;
@@ -1162,11 +1183,30 @@ header{
     color: var(--col-btn-primary);
 }
 
+.hidden-show-button {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    cursor: pointer;
+    color: var(--col-theme-text);
+    justify-content: center;
+    align-items: center;
+    height: 56px;
+    width: 56px;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--col-theme-accent);
+    z-index: 1;
+    user-select: none;
+    display: none;
+}
+
 .metrics-panel {
     will-change: width;
     position: absolute;
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
     width: 160px;
     right: 1rem;
     bottom: 1rem;
@@ -1188,7 +1228,6 @@ header{
     transform: rotate(0);
 }
 .metrics-list{
-    flex: 0 1 0;
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -1393,18 +1432,141 @@ header{
         columns: 120px;
     }
 
-    .viewer-control-panel {
+    .viewer-control-panel, .metrics-panel {
         position: static;
+        height: fit-content;
     }
 
-    #viewer-hide-button {
+    .hidden-panel {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
-        right: 0;
-        border-radius: 0;
         width: 100%;
-        height: 42px;
+        height: 50%;
+        pointer-events: auto;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--col-theme-bg-overlay-dark);
+        border-radius: var(--var-card-border-radius) var(--var-card-border-radius) 0 0;
+        transition: transform ease .2s;
+        transform: translateY(100%);
+    }
+    .hidden-panel.open {
+        transform: translateY(0);
+    }
+
+    .hidden-panel-header {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        margin: 16px;
+    }
+    .hidden-panel-close-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        color: var(--col-theme-text-muted);
+        border: none;
+        padding: 0;
+        margin: 0;
+        height: 32px;
+        width: 32px;
+        :hover {
+            color: var(--col-theme-text);
+            transform: translateZ(0);
+        }
+    }
+
+    .viewport-functions {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 1rem;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    .background-palette {
+        flex-direction: row;
+        justify-content: space-evenly;
+    }
+    #debug-panel, #debug-panel:hover {
+        display: flex;
+        margin: 0;
+        width: 100%;
+        height: fit-content;
+        background: none;
+        border-radius: var(--var-card-border-radius);
+        padding: 0 1rem;
+        border: 2px solid var(--col-panel-separator);
+    }
+    #debug-list {
+        border-top: 1px solid var(--col-panel-separator);
+        display: flex;
+        width: 100%;
+    }
+
+    .metrics-button {
+        pointer-events: none;
+        justify-content: center;
+    }
+    .metrics-icon {
+        display: none;
+    }
+    .metrics-panel, .metrics-panel.open {
+        display: flex;
+        flex-direction: column;
+        pointer-events: auto;
+        width: 100%;
+        height: fit-content;
+        z-index: 2;
+        border-radius: var(--var-card-border-radius);
+        background: none;
+        margin-top: 2rem;
+        border: 2px solid var(--col-panel-separator);
+        flex-shrink: 0;
+    }
+    .metrics-list, .metrics-list.open{
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        padding: 0 1rem;
+        margin: 0;
+        height: fit-content;
+    }
+
+    .viewport-interaction-switch {
+        right: 1rem;
+        top: 1rem;
+        margin: 0;
+    }
+
+    .animation-panel {
+        position: static;
+        width: 100%;
+        border-radius: var(--var-card-border-radius);
+        border: 2px solid var(--col-panel-separator);
+        padding: 1rem;
+    }
+    .anim-drop-button-holder {
+        justify-content: center;
+    }
+    .anim-skeleton-drop-button {
+        background: none;
+    }
+    .animation-list {
+        background: none;
+        border: 1px solid var(--col-panel-separator);
+    }
+    .anim-button {
+        height: 40px;
+    }
+
+    .hidden-show-button {
+        display: flex;
     }
 }
 
@@ -1421,12 +1583,22 @@ header{
     }
 }
 
-@media (max-width: 370px) {
+@media (max-width: 375px) {
     .perfect-grid {
         grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     }
     .perfect-grid > .card-wrapper{
         height: 140px;
         width: 100px;
+    }
+}
+
+@media (max-width: 320px) {
+    .perfect-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    }
+    .perfect-grid > .card-wrapper{
+        height: 150px;
+        width: 120px;
     }
 }

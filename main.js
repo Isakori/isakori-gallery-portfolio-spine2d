@@ -33,6 +33,9 @@ const info_panel1 = document.querySelector(".info-panel.side");
 const sidebar_button = document.querySelector('.burger-button');
 const sidebar_close_button = document.querySelector('.sidebar-close-button');
 const sidebar = document.querySelector('.sidebar');
+const hidden_show_button = document.querySelector('.hidden-show-button');
+const hidden_close_button = document.querySelector('.hidden-panel-close-button');
+const hidden_panel = document.querySelector('.hidden-panel');
 /* ----------------------------------------------------------------------------- 6 */
 const viewer = document.querySelector("#viewer");
 const size_button = document.getElementById("viewer-size-button");
@@ -306,6 +309,8 @@ info_button1.addEventListener('click', e => {
 /* ----------------------------------------------------------------------------- 5 */
 sidebar_button.addEventListener('click', () => { sidebar.classList.add("open"); });
 sidebar_close_button.addEventListener('click', () => { sidebar.classList.remove("open"); });
+hidden_show_button.addEventListener('click', () => { hidden_panel.classList.add("open") });
+hidden_close_button.addEventListener('click', () => { hidden_panel.classList.remove("open") });
 
 /* ----------------------------------------------------------------------------- 6 */
 size_button.addEventListener("click", () => {
@@ -1713,18 +1718,17 @@ app.ticker.add((delta) => {
 
 
 
-// ===================
-// ТОЛЬКО ТАЧ
-// ===================
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------- TOUCH ---------------------------------------------------------------------------- */
+
 (function setupTouchPointers(app, viewport) {
-    const el = app.view; // canvas
-    const pointers = new Map(); // pointerId -> {x,y}
-    let singlePointerInfo = null; // {id, startX, startY, startTime}
+    const el = app.view;
+    const pointers = new Map();
+    let singlePointerInfo = null;
     let dragPausedForTouch = false;
     let lastDist = 0;
     let lastMid = null;
 
-    // helper
     function getDistance(p1, p2) {
         const dx = p1.x - p2.x;
         const dy = p1.y - p2.y;
@@ -1734,7 +1738,6 @@ app.ticker.add((delta) => {
         return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
     }
 
-    // Pause drag plugin for touch input
     function pauseDragForTouch() {
         if (!dragPausedForTouch && viewport.plugins && viewport.plugins.pause) {
             try { viewport.plugins.pause('drag'); } catch(e){ /* fallback */ }
@@ -1748,14 +1751,12 @@ app.ticker.add((delta) => {
         }
     }
 
-    // synth dispatch to canvas so Pixi's interaction sees it as mouse-like pointer
     function synthPointer(type, clientX, clientY, pointerId = 1) {
-        // pointerType "mouse" makes Pixi treat it like normal mouse input for existing handlers
         const ev = new PointerEvent(type, {
             bubbles: true,
             cancelable: true,
             pointerId,
-            pointerType: 'mouse', // emulate mouse for compatibility with existing mouse handlers
+            pointerType: 'mouse',
             isPrimary: true,
             clientX,
             clientY,
@@ -1764,71 +1765,50 @@ app.ticker.add((delta) => {
         el.dispatchEvent(ev);
     }
 
-    // pointerdown
     el.addEventListener('pointerdown', (e) => {
-        // if it's mouse, do nothing — let viewport handle it
         if (e.pointerType === 'mouse') return;
 
-        // touch pointer
         const id = e.pointerId;
         pointers.set(id, { x: e.clientX, y: e.clientY });
 
-        // capture pointer (so we keep getting moves)
         try { (e.target || el).setPointerCapture(id); } catch (err) {}
 
         if (pointers.size === 1) {
-            // SINGLE TOUCH: record for possible click / drag-as-interaction
             singlePointerInfo = { id, startX: e.clientX, startY: e.clientY, startTime: performance.now() };
 
-            // Pause viewport drag so it doesn't steal events (we will resume on pointerup when map empty)
             pauseDragForTouch();
 
-            // Fire synthetic pointerdown as mouse to let interactive objects receive "mousedown" / "pointerdown"
             synthPointer('pointerdown', e.clientX, e.clientY, id);
         } else if (pointers.size === 2) {
-            // SECOND pointer: begin pinch+pan mode
-            // cancel potential synthetic single click down because now it's multi-touch
-            // we can also send pointercancel/up if needed
-            // init pinch
             const arr = Array.from(pointers.values());
             lastDist = getDistance(arr[0], arr[1]);
             lastMid = midPoint(arr[0], arr[1]);
 
-            // If we previously dispatched pointerdown as a single-click, synthesize a pointerup to close that gesture
-            // (some UI expect pointerup)
             synthPointer('pointerup', singlePointerInfo.startX, singlePointerInfo.startY, singlePointerInfo.id);
             singlePointerInfo = null;
         }
     }, { passive: false });
 
-    // pointermove
     el.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'mouse') return; // let viewport handle mouse
+        if (e.pointerType === 'mouse') return;
 
         const id = e.pointerId;
         if (!pointers.has(id)) return;
         pointers.set(id, { x: e.clientX, y: e.clientY });
 
         if (pointers.size === 1) {
-            // single finger move: forward as pointermove (so interactive drag/hover works)
-            // synth as mouse pointermove
             synthPointer('pointermove', e.clientX, e.clientY, id);
         } else if (pointers.size === 2) {
-            // two finger pinch+pan
-            // compute new dist and mid
             const vals = Array.from(pointers.values());
             const p1 = vals[0], p2 = vals[1];
             const dist = getDistance(p1, p2);
             const mid = midPoint(p1, p2);
 
-            // zoom factor relative to lastDist
             if (lastDist > 0) {
                 const scale = viewport.scale.x * (dist / lastDist);
-                // use your preferred clamp limits via viewport.setZoom or your clamp plugin will correct
                 viewport.setZoom(scale, true);
             }
 
-            // pan by change of midpoint
             const dx = mid.x - lastMid.x;
             const dy = mid.y - lastMid.y;
             viewport.x += dx;
@@ -1841,43 +1821,31 @@ app.ticker.add((delta) => {
         e.preventDefault && e.preventDefault();
     }, { passive: false });
 
-    // pointerup / cancel
     function handlePointerUp(e) {
         if (e.pointerType === 'mouse') return;
 
         const id = e.pointerId;
-        // if pointer wasn't tracked — ignore
         if (pointers.has(id)) pointers.delete(id);
         try { (e.target || el).releasePointerCapture(id); } catch (err) {}
 
         if (pointers.size === 0) {
-            // ended all touches
-            // if we had a recorded singleTouch and movement small & short time => treat as click
             if (singlePointerInfo) {
                 const dt = performance.now() - singlePointerInfo.startTime;
-                // small movement threshold
                 const moved = Math.hypot((e.clientX - singlePointerInfo.startX), (e.clientY - singlePointerInfo.startY));
                 if (moved < 10 && dt < 350) {
-                    // synth click: pointerup already will be dispatched below; if needed, can also dispatch 'click'
-                    // send final pointerup to complete interaction
                     synthPointer('pointerup', e.clientX, e.clientY, singlePointerInfo.id);
-                    // optionally send click event for DOM handlers: (not always necessary for Pixi)
                     el.dispatchEvent(new MouseEvent('click', { clientX: e.clientX, clientY: e.clientY }));
                 } else {
-                    // ended drag-like single-touch — send pointerup
                     synthPointer('pointerup', e.clientX, e.clientY, singlePointerInfo.id);
                 }
             }
             singlePointerInfo = null;
 
-            // resume drag plugin after touches finished
             resumeDragAfterTouch();
         } else if (pointers.size === 1) {
-            // if one of two fingers lifted, we should continue treating remaining as single
-            // reset singlePointerInfo to existing pointer
             const remaining = Array.from(pointers.entries())[0];
             singlePointerInfo = { id: remaining[0], startX: remaining[1].x, startY: remaining[1].y, startTime: performance.now() };
-            // also reset pinch state
+
             lastDist = 0;
             lastMid = null;
         }
