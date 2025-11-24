@@ -1400,8 +1400,8 @@ function spawnClickParticle(x, y) {
                     config: {
                         scale: {
                             list: [
-                                { value: adjustToScale(0.33), time: 0 },
-                                { value: adjustToScale(0.8), time: 1 }
+                                { value: 0.33, time: 0 },
+                                { value: 0.8, time: 1 }
                             ],
                             minimumScaleMultiplier: 1,
                             ease: x => 1 - Math.pow(1 - x, 3)
@@ -1447,8 +1447,8 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         type: 'torus',
                         data: {
-                            radius: adjustToScale(45),
-                            innerRadius: adjustToScale(25),
+                            radius: 45,
+                            innerRadius: 25,
                             affectRotation: true
                         }
                     }
@@ -1504,9 +1504,9 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         scale: {
                             list: [
-                                { value: adjustToScale(0.0), time: 0 },
-                                { value: adjustToScale(0.5), time: 0.21 },
-                                { value: adjustToScale(0.2), time: 1.0 }
+                                { value: 0.0, time: 0 },
+                                { value: 0.5, time: 0.21 },
+                                { value: 0.2, time: 1.0 }
                             ],
                             minimumScaleMultiplier: 1
                         }
@@ -1517,8 +1517,8 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         speed: {
                             list: [
-                                { value: adjustToScale(150), time: 0 },
-                                { value: adjustToScale(40), time: 1 }
+                                { value: 150, time: 0 },
+                                { value: 40, time: 1 }
                             ],
                             ease: x => Math.sin((x * Math.PI) / 2)
                         }
@@ -1639,9 +1639,9 @@ function spawnArc(x, y, options = {}) {
     const arc = new SingleArcEffect(x, y, {
         duration: 0.53,
         color: 0xB8EEFF,
-        lineWidth: adjustToScale(3),
+        lineWidth: 3,
         rotationTotal: Math.PI,
-        radiusRange: [adjustToScale(30), adjustToScale(34)],
+        radiusRange: [30, 34],
         radiusGrow: 2.4,
         blendMode: PIXI.BLEND_MODES.ADD,
         ...options
@@ -1705,7 +1705,7 @@ app.ticker.add((delta) => {
         const t = i / points.length;
 
         // толщина уменьшается к хвосту
-        const thickness = adjustToScale(baseThickness * t);
+        const thickness = baseThickness * t;
         trailBlur.lineStyle(thickness, 0x249BFF, 1);
         trail.lineStyle(thickness, 0x008CFF, 1);
 
