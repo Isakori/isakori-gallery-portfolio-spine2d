@@ -6,12 +6,12 @@ const translations = {
         en: "Guide"
     },
     guide1: {
-        ru: '— кнопка во вьюпорте для переключения режимов между просмотром анимации и взаимодействия. В режиме просмотра анимации для перемещения камеры используются ЛКМ и ПКМ. В режиме взаимодействия - ЛКМ для взаимодействия, ПКМ для камеры.',
-        en: '— a button in viewport to switch between animation preview and interaction mode. In animation preview mode, use LMB and RMB to move the camera. In interaction mode, use LMB to interact and RMB to move the camera.'
+        ru: '— кнопка во вьюпорте для переключения режимов между просмотром анимации и взаимодействия. В режиме просмотра анимации для перемещения камеры используются ЛКМ и ПКМ. В режиме взаимодействия - ЛКМ для взаимодействия, ПКМ для камеры. Для сенсорных экранов камера перемещается касанием двумя пальцами.',
+        en: '— a button in viewport to switch between animation preview and interaction mode. In animation preview mode, use LMB and RMB to move the camera. In interaction mode, use LMB to interact and RMB to move the camera. On touchscreens, the camera moves with a two-finger tap.'
     },
     guide2: {
-        ru: '— наведение на кнопку отобразит места, доступные для взаимодействий, и тип взаимодействия.',
-        en: '— hovering over the button will display the locations available for interaction and the type of interaction.'
+        ru: '— наведение на кнопку отобразит места, доступные для взаимодействий, и тип взаимодействия. Для сенсорных экранов - удержание на кнопке.',
+        en: '— hovering over the button will display the locations available for interaction and the type of interaction. For touch screens, holding the button.'
     },
     guide3: {
         ru: '— взаимодействие удержанием и перемещением курсора.',
