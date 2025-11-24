@@ -612,7 +612,7 @@ function adjustToScale(value) {
     return value / app.renderer.resolution;
 }
 function adjustToScaleMbl(value) {
-    return value * 0.5;
+    return value / app.renderer.resolution * 3;
 }
 
 let resizeTimeout;
