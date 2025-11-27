@@ -872,6 +872,7 @@ function showInViewer(project) {
                     if (!isInteractiveMode) return;
                     if (isPonterDown) { 
                         const clickPos = event.data.global;
+                        trailParticles(clickPos.x, clickPos.y);
                         updateTrail(clickPos.x, clickPos.y);
                     }
                     if (!dragData) return;
@@ -915,6 +916,7 @@ function showInViewer(project) {
                         });
                         returnTicker.start();
                     
+                        resetPointer();
                         stopInteraction(dragData.bound.spine);
 
                         dragData = null;
@@ -1427,28 +1429,35 @@ function spawnClickParticle(x, y) {
         }, 200);
     }
 }
-function spawnTriangleParticles(x, y) {
+function spawnTriangleParticles(x, y, options = {
+    particlesPerWave: 4,
+    lifeTime: 0.53,
+    innerRadius: 25,
+    radius: 45,
+    particleScale: 1,
+    moveSpeedMultiplier: 1
+}) {
     const emitter = new PIXI.particles.Emitter(
         particleLayer,
         {
             lifetime: {
-                min: 0.53,
-                max: 0.53
+                min: options.lifeTime,
+                max: options.lifeTime
             },
             frequency: 0.05,
-            emitterLifetime: 0.53,
-            maxParticles: 4,
+            emitterLifetime: options.lifeTime,
+            maxParticles: options.particlesPerWave,
             spawnChance: 1,
             pos: { x, y },
-            particlesPerWave: 4,
+            particlesPerWave: options.particlesPerWave,
             behaviors: [
                 {
                     type: "spawnShape",
                     config: {
                         type: 'torus',
                         data: {
-                            radius: adjustToScale(45),
-                            innerRadius: adjustToScale(25),
+                            radius: adjustToScale(options.radius),
+                            innerRadius: adjustToScale(options.innerRadius),
                             affectRotation: true
                         }
                     }
@@ -1504,9 +1513,9 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         scale: {
                             list: [
-                                { value: adjustToScale(0.0), time: 0 },
-                                { value: adjustToScale(0.5), time: 0.21 },
-                                { value: adjustToScale(0.2), time: 1.0 }
+                                { value: adjustToScale(0.0 * options.particleScale), time: 0 },
+                                { value: adjustToScale(0.5 * options.particleScale), time: 0.21 },
+                                { value: adjustToScale(0.2 * options.particleScale), time: 1.0 }
                             ],
                             minimumScaleMultiplier: 1
                         }
@@ -1517,8 +1526,8 @@ function spawnTriangleParticles(x, y) {
                     config: {
                         speed: {
                             list: [
-                                { value: adjustToScale(150), time: 0 },
-                                { value: adjustToScale(40), time: 1 }
+                                { value: adjustToScale(150 * options.moveSpeedMultiplier), time: 0 },
+                                { value: adjustToScale(40 * options.moveSpeedMultiplier), time: 1 }
                             ],
                             ease: x => Math.sin((x * Math.PI) / 2)
                         }
@@ -1665,6 +1674,33 @@ const maxLength = 20;
 const baseThickness = 6;
 let idleTimer = 0; 
 
+let lastPointerPos = null;
+let pointerTraveled = 0;
+const emitDistance = 100;
+
+function trailParticles(x, y) {
+    if (lastPointerPos) {
+        const dx = x - lastPointerPos.x;
+        const dy = y - lastPointerPos.y;
+
+        const stepDist = Math.sqrt(dx * dx + dy * dy);
+        pointerTraveled += stepDist;
+
+        if (pointerTraveled >= emitDistance) {
+            spawnTriangleParticles(x, y, { 
+                particlesPerWave: 1,
+                lifeTime: 0.3,
+                innerRadius: 0,
+                radius: 25,
+                particleScale: 0.8,
+                moveSpeedMultiplier: 0.7
+            } );
+            pointerTraveled = 0;
+        }
+    }
+
+    lastPointerPos = { x, y };
+}
 
 function updateTrail(x, y) {
     points.push({ x, y });
@@ -1716,7 +1752,10 @@ app.ticker.add((delta) => {
     }
 });
 
-
+function resetPointer() {
+    pointerTraveled = 0;
+    lastPointerPos = null;
+}
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------------------------- TOUCH ---------------------------------------------------------------------------- */
@@ -1854,3 +1893,4 @@ app.ticker.add((delta) => {
     el.addEventListener('pointercancel', handlePointerUp, { passive: false });
 
 })(app, viewport);
+
