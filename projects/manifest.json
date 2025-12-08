@@ -137,11 +137,11 @@
             ],
             "metrics": {
                 "spine": "v3.8.75",
-                "bones": 43,
+                "bones": 44,
                 "constraints": 6,
                 "slots": 24,
-                "vertices": 773,
-                "triangles": 919
+                "vertices": 782,
+                "triangles": 936
             }
         }
     ],
