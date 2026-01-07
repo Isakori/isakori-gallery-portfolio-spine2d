@@ -143,6 +143,25 @@
                 "vertices": 782,
                 "triangles": 936
             }
+        },
+        {
+            "id": 8,
+            "projectName": "Bomber",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "Bomber"
+            ],
+            "tags": [
+                "character"
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 84,
+                "constraints": 5,
+                "slots": 59,
+                "vertices": 195,
+                "triangles": 189
+            }
         }
     ],
     "Anibal": []
