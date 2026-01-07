@@ -1,0 +1,160 @@
+
+Bomber.png
+size: 2644,2644
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Base
+  rotate: false
+  xy: 4, 1709
+  size: 1127, 929
+  orig: 1127, 929
+  offset: 0, 0
+  index: -1
+Fuse
+  rotate: false
+  xy: 2196, 2087
+  size: 407, 308
+  orig: 407, 309
+  offset: 0, 0
+  index: -1
+Fuse-lit
+  rotate: false
+  xy: 2196, 1775
+  size: 407, 308
+  orig: 407, 309
+  offset: 0, 0
+  index: -1
+Left-eye
+  rotate: true
+  xy: 1486, 1522
+  size: 191, 178
+  orig: 191, 180
+  offset: 0, 2
+  index: -1
+Left-leg
+  rotate: true
+  xy: 1985, 293
+  size: 302, 248
+  orig: 302, 250
+  offset: 0, 2
+  index: -1
+Mouth
+  rotate: true
+  xy: 4, 48
+  size: 908, 583
+  orig: 908, 583
+  offset: 0, 0
+  index: -1
+Right-eye
+  rotate: true
+  xy: 863, 990
+  size: 107, 228
+  orig: 109, 231
+  offset: 1, 2
+  index: -1
+Right-leg
+  rotate: false
+  xy: 1985, 40
+  size: 301, 249
+  orig: 302, 250
+  offset: 1, 1
+  index: -1
+Top
+  rotate: false
+  xy: 2196, 2399
+  size: 410, 239
+  orig: 410, 239
+  offset: 0, 0
+  index: -1
+VFX_Particle_0
+  rotate: false
+  xy: 1143, 1043
+  size: 54, 54
+  orig: 64, 64
+  offset: 5, 5
+  index: -1
+VFX_Particle_1
+  rotate: false
+  xy: 2503, 1649
+  size: 122, 122
+  orig: 128, 128
+  offset: 3, 3
+  index: -1
+VFX_Particle_2
+  rotate: false
+  xy: 1095, 984
+  size: 48, 48
+  orig: 64, 64
+  offset: 8, 8
+  index: -1
+Wrinkles
+  rotate: false
+  xy: 2196, 1497
+  size: 303, 274
+  orig: 303, 274
+  offset: 0, 0
+  index: -1
+vfx/Explosion-particle
+  rotate: true
+  xy: 4, 4
+  size: 40, 58
+  orig: 40, 58
+  offset: 0, 0
+  index: -1
+vfx/Explosion-ring
+  rotate: true
+  xy: 2503, 960
+  size: 685, 111
+  orig: 706, 120
+  offset: 11, 4
+  index: -1
+vfx/Explosion-ring-particle
+  rotate: false
+  xy: 1095, 1036
+  size: 44, 61
+  orig: 44, 62
+  offset: 0, 0
+  index: -1
+vfx/Shining 01
+  rotate: true
+  xy: 1488, 23
+  size: 572, 493
+  orig: 572, 493
+  offset: 0, 0
+  index: -1
+vfx/Shining 02
+  rotate: false
+  xy: 4, 980
+  size: 855, 725
+  orig: 855, 725
+  offset: 0, 0
+  index: -1
+vfx/Shining 03
+  rotate: false
+  xy: 1488, 599
+  size: 1003, 894
+  orig: 1003, 894
+  offset: 0, 0
+  index: -1
+vfx/Shining 04
+  rotate: false
+  xy: 1135, 1717
+  size: 1057, 921
+  orig: 1057, 921
+  offset: 0, 0
+  index: -1
+vfx/Shining 05
+  rotate: true
+  xy: 591, 11
+  size: 965, 893
+  orig: 965, 893
+  offset: 0, 0
+  index: -1
+vfx/Shining 06
+  rotate: true
+  xy: 863, 1101
+  size: 604, 619
+  orig: 604, 619
+  offset: 0, 0
+  index: -1
