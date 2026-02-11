@@ -1,0 +1,482 @@
+
+MedievalUI.png
+size: 1532,1532
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Aim
+  rotate: true
+  xy: 1026, 932
+  size: 91, 100
+  orig: 91, 100
+  offset: 0, 0
+  index: -1
+Arrow
+  rotate: false
+  xy: 1433, 481
+  size: 92, 53
+  orig: 93, 57
+  offset: 0, 3
+  index: -1
+Chain C
+  rotate: true
+  xy: 1494, 939
+  size: 50, 28
+  orig: 50, 28
+  offset: 0, 0
+  index: -1
+Chain I
+  rotate: false
+  xy: 1501, 1071
+  size: 19, 48
+  orig: 19, 48
+  offset: 0, 0
+  index: -1
+Chain O
+  rotate: false
+  xy: 1433, 545
+  size: 40, 48
+  orig: 40, 48
+  offset: 0, 0
+  index: -1
+Close button
+  rotate: true
+  xy: 1245, 872
+  size: 74, 73
+  orig: 74, 73
+  offset: 0, 0
+  index: -1
+Close button pressed
+  rotate: true
+  xy: 420, 309
+  size: 66, 65
+  orig: 74, 73
+  offset: 4, 4
+  index: -1
+Coin
+  rotate: false
+  xy: 1036, 681
+  size: 79, 71
+  orig: 83, 74
+  offset: 2, 1
+  index: -1
+Compass needle
+  rotate: false
+  xy: 1494, 896
+  size: 25, 39
+  orig: 25, 39
+  offset: 0, 0
+  index: -1
+Crystal0
+  rotate: true
+  xy: 1394, 1029
+  size: 75, 103
+  orig: 75, 103
+  offset: 0, 0
+  index: -1
+Crystal1
+  rotate: false
+  xy: 1464, 10
+  size: 55, 80
+  orig: 55, 80
+  offset: 0, 0
+  index: -1
+Crystal2
+  rotate: true
+  xy: 1446, 1110
+  size: 36, 50
+  orig: 36, 50
+  offset: 0, 0
+  index: -1
+Crystal3
+  rotate: false
+  xy: 669, 25
+  size: 35, 40
+  orig: 35, 40
+  offset: 0, 0
+  index: -1
+Game paused
+  rotate: false
+  xy: 188, 379
+  size: 298, 97
+  orig: 298, 97
+  offset: 0, 0
+  index: -1
+Game paused side
+  rotate: true
+  xy: 1446, 1249
+  size: 98, 74
+  orig: 98, 75
+  offset: 0, 1
+  index: -1
+Gem
+  rotate: false
+  xy: 1130, 940
+  size: 89, 83
+  orig: 96, 89
+  offset: 4, 3
+  index: -1
+Glow particle
+  rotate: false
+  xy: 1464, 189
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+Lightning
+  rotate: false
+  xy: 1446, 1150
+  size: 74, 95
+  orig: 74, 95
+  offset: 0, 0
+  index: -1
+Load game
+  rotate: false
+  xy: 1036, 756
+  size: 285, 112
+  orig: 285, 112
+  offset: 0, 0
+  index: -1
+Lock
+  rotate: true
+  xy: 719, 9
+  size: 100, 120
+  orig: 104, 124
+  offset: 2, 3
+  index: -1
+Lock unlocked
+  rotate: false
+  xy: 489, 194
+  size: 104, 152
+  orig: 104, 152
+  offset: 0, 0
+  index: -1
+Medieval
+  rotate: false
+  xy: 764, 481
+  size: 561, 187
+  orig: 564, 191
+  offset: 1, 3
+  index: -1
+Medieval extra
+  rotate: true
+  xy: 1223, 950
+  size: 73, 90
+  orig: 75, 93
+  offset: 0, 3
+  index: -1
+Medieval side
+  rotate: false
+  xy: 4, 330
+  size: 180, 146
+  orig: 180, 147
+  offset: 0, 0
+  index: -1
+Medieval sign
+  rotate: false
+  xy: 764, 113
+  size: 533, 364
+  orig: 537, 366
+  offset: 2, 1
+  index: -1
+Metal ring
+  rotate: true
+  xy: 957, 688
+  size: 43, 53
+  orig: 49, 59
+  offset: 2, 3
+  index: -1
+New game
+  rotate: true
+  xy: 188, 90
+  size: 285, 112
+  orig: 285, 112
+  offset: 0, 0
+  index: -1
+Options
+  rotate: true
+  xy: 1329, 656
+  size: 200, 146
+  orig: 200, 146
+  offset: 0, 0
+  index: -1
+Pause menu
+  rotate: true
+  xy: 915, 1027
+  size: 501, 475
+  orig: 506, 478
+  offset: 3, 2
+  index: -1
+Potion
+  rotate: false
+  xy: 1119, 687
+  size: 90, 65
+  orig: 94, 69
+  offset: 2, 2
+  index: -1
+Potion bubble
+  rotate: true
+  xy: 1500, 1123
+  size: 23, 22
+  orig: 23, 22
+  offset: 0, 0
+  index: -1
+Potion bung
+  rotate: true
+  xy: 1433, 597
+  size: 55, 41
+  orig: 60, 45
+  offset: 2, 2
+  index: -1
+Potion flask
+  rotate: true
+  xy: 843, 11
+  size: 98, 104
+  orig: 103, 108
+  offset: 2, 2
+  index: -1
+Quit
+  rotate: true
+  xy: 4, 41
+  size: 285, 112
+  orig: 285, 112
+  offset: 0, 0
+  index: -1
+Quit Game
+  rotate: true
+  xy: 832, 929
+  size: 177, 79
+  orig: 177, 79
+  offset: 0, 0
+  index: -1
+Retry
+  rotate: true
+  xy: 1446, 1351
+  size: 177, 79
+  orig: 177, 79
+  offset: 0, 0
+  index: -1
+Running Light Sequence/shining_10
+  rotate: false
+  xy: 306, 29
+  size: 90, 57
+  orig: 301, 60
+  offset: 106, 2
+  index: -1
+Running Light Sequence/shining_11
+  rotate: false
+  xy: 832, 674
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_12
+  rotate: true
+  xy: 120, 205
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_13
+  rotate: true
+  xy: 120, 80
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_14
+  rotate: true
+  xy: 420, 184
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_15
+  rotate: true
+  xy: 544, 69
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_16
+  rotate: false
+  xy: 544, 8
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_17
+  rotate: false
+  xy: 181, 29
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_18
+  rotate: false
+  xy: 951, 52
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_19
+  rotate: false
+  xy: 1076, 52
+  size: 121, 57
+  orig: 301, 60
+  offset: 98, 2
+  index: -1
+Running Light Sequence/shining_20
+  rotate: false
+  xy: 1213, 698
+  size: 103, 54
+  orig: 301, 60
+  offset: 116, 3
+  index: -1
+Save game
+  rotate: true
+  xy: 304, 90
+  size: 285, 112
+  orig: 285, 112
+  offset: 0, 0
+  index: -1
+Score sign
+  rotate: true
+  xy: 619, 184
+  size: 292, 83
+  orig: 292, 83
+  offset: 0, 0
+  index: -1
+Slider
+  rotate: false
+  xy: 1464, 94
+  size: 63, 91
+  orig: 63, 91
+  offset: 0, 0
+  index: -1
+Slider path
+  rotate: false
+  xy: 1394, 1108
+  size: 48, 420
+  orig: 48, 420
+  offset: 0, 0
+  index: -1
+Slider path bg
+  rotate: true
+  xy: 832, 885
+  size: 40, 409
+  orig: 40, 409
+  offset: 0, 0
+  index: -1
+Smoke
+  rotate: false
+  xy: 1301, 257
+  size: 220, 220
+  orig: 256, 256
+  offset: 18, 18
+  index: -1
+Spire
+  rotate: true
+  xy: 1479, 538
+  size: 318, 43
+  orig: 318, 43
+  offset: 0, 0
+  index: -1
+Star
+  rotate: false
+  xy: 420, 64
+  size: 120, 116
+  orig: 120, 116
+  offset: 0, 0
+  index: -1
+Star glowing
+  rotate: true
+  xy: 1329, 860
+  size: 163, 161
+  orig: 163, 161
+  offset: 0, 0
+  index: -1
+Star particle
+  rotate: true
+  xy: 1494, 993
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+Sword
+  rotate: true
+  xy: 605, 69
+  size: 111, 110
+  orig: 115, 114
+  offset: 1, 2
+  index: -1
+Sword slash
+  rotate: true
+  xy: 1329, 499
+  size: 153, 100
+  orig: 153, 100
+  offset: 0, 0
+  index: -1
+Upgrades
+  rotate: false
+  xy: 832, 735
+  size: 200, 146
+  orig: 200, 146
+  offset: 0, 0
+  index: -1
+blastwave1
+  rotate: false
+  xy: 490, 350
+  size: 125, 126
+  orig: 128, 128
+  offset: 3, 1
+  index: -1
+dungeonBG
+  rotate: false
+  xy: 4, 480
+  size: 376, 626
+  orig: 376, 626
+  offset: 0, 0
+  index: -1
+dungeonBG-blurred
+  rotate: false
+  xy: 384, 480
+  size: 376, 626
+  orig: 376, 626
+  offset: 0, 0
+  index: -1
+lightRay
+  rotate: true
+  xy: 764, 672
+  size: 434, 64
+  orig: 434, 64
+  offset: 0, 0
+  index: -1
+phoneMockUP
+  rotate: false
+  xy: 4, 1110
+  size: 907, 418
+  orig: 907, 418
+  offset: 0, 0
+  index: -1
+screen
+  rotate: false
+  xy: 1494, 876
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+signBG
+  rotate: true
+  xy: 1301, 36
+  size: 217, 159
+  orig: 222, 164
+  offset: 3, 3
+  index: -1
+Сompass
+  rotate: false
+  xy: 915, 930
+  size: 107, 93
+  orig: 111, 99
+  offset: 2, 3
+  index: -1
