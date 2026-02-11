@@ -152,7 +152,8 @@
                 "Bomber"
             ],
             "tags": [
-                "character"
+                "character",
+                "vfx"
             ],
             "metrics": {
                 "spine": "v3.8.75",
@@ -164,5 +165,26 @@
             }
         }
     ],
-    "Anibal": []
+    "Anibal": [
+        {
+            "id": 9,
+            "projectName": "Medieval UI",
+            "imagePostfix": "_thumbnail.png",
+            "skeletons": [
+                "MedievalUI"
+            ],
+            "tags": [
+                "ui",
+                "vfx"
+            ],
+            "metrics": {
+                "spine": "v3.8.75",
+                "bones": 446,
+                "constraints": 12,
+                "slots": 539,
+                "vertices": 1735,
+                "triangles": 1522
+            }
+        }
+    ]
 }
