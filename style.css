@@ -1293,7 +1293,7 @@ header{
 
 /* -------------------------------------------------------------- loading icon */
 
-#loading-indicator {
+#loading-screen {
     will-change: opacity, visibility;
     position: absolute;
     inset: 0;
@@ -1302,6 +1302,17 @@ header{
     justify-content: flex-end;
     padding: 2rem;
     background: #0a0a0a20;
+    z-index: 19;
+}
+#loading-indicator {
+    transform-origin: right bottom;
+    will-change: opacity, visibility;
+    /* position: absolute; */
+    inset: 0;
+    display: flex;
+    justify-content: end;
+    height: fit-content;
+    width: 100%;
     z-index: 20;
     transition: opacity 0.1s ease, visibility 0.1s ease;
     gap: 1.5rem;
@@ -1418,7 +1429,7 @@ header{
   }
 }
 
-#loading-indicator.hidden {
+#loading-screen.hidden {
     opacity: 0;
     visibility: hidden;
 }
@@ -1463,6 +1474,21 @@ header{
     .perfect-grid > .card-wrapper{
         height: 160px;
         width: 120px;
+    }
+
+    #loading-indicator {
+        gap: 0.75rem;
+    }
+    .loading-text-holder {
+        gap: 0.35rem;
+    }
+    .loading-text{
+        text-align: end;
+        font-size: 24px;
+    }
+    .loading-icon {
+        width: 42px;
+        height: 42px;
     }
 }
 
@@ -1685,6 +1711,21 @@ header{
     .perfect-grid > .card-wrapper{
         height: 140px;
         width: 100px;
+    }
+
+    #loading-indicator {
+        gap: 0.6rem;
+    }
+    .loading-text-holder {
+        gap: 0.2rem;
+    }
+    .loading-text{
+        text-align: end;
+        font-size: 18px;
+    }
+    .loading-icon {
+        width: 30px;
+        height: 30px;
     }
 }
 

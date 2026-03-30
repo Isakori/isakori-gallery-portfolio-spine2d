@@ -742,7 +742,7 @@ function clearTickers() {
 }
 
 function showInViewer(project) {
-    const loaderElement = document.getElementById("loading-indicator");
+    const loaderElement = document.getElementById("loading-screen");
     loaderElement.classList.remove("hidden");
     isLoading = true;
 
