@@ -332,9 +332,9 @@ hide_button.addEventListener("click", () => {
     }, 250);
 });
 function updateLoadingBar(value) {
-    loadingBar.style.transition = "0s linear";
+    loadingBar.style.display = "flex";
     loadingBar.style.opacity = "1";
-    loadingBar.style.transition = "0.5s ease";
+    loadingBar.style.transition = "width 0.3s ease";
 
     const percent = value * 100;
     loadingBar.style.width = percent + "%";
@@ -345,10 +345,13 @@ function updateLoadingBar(value) {
 }
 function finishLoading() {
     loadingBar.style.width = "100%";
+    loadingBar.style.opacity = "0";
+    loadingBar.style.transition = "opacity 0.5s ease";
 
     setTimeout(() => {
-        loadingBar.style.opacity = "0";
-    }, 200);
+        loadingBar.style.display = "none";
+        loadingBar.style.width = "0%";
+    }, 500);
 }
 
 spinePalBtn.addEventListener('click', () => {
