@@ -1434,7 +1434,7 @@ header{
     visibility: hidden;
 }
 
-#loading-indicator.hidden svg {
+#loading-screen.hidden svg {
     animation-play-state: paused;
 }
 
