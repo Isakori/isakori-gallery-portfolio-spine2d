@@ -42,6 +42,7 @@ const size_button = document.getElementById("viewer-size-button");
 const hide_button = document.getElementById("viewer-hide-button");
 const viewer_states = ["closed", "minimized", "maximized"];
 let currentViewerState = viewer_states[0];
+const loadingBar = document.querySelector(".loading-bar");
 
 const buttons = document.querySelectorAll('.bg-palette-button');
 const spinePalBtn = document.getElementById('spine-bg');
@@ -330,6 +331,25 @@ hide_button.addEventListener("click", () => {
         unloadCurrentProject();
     }, 250);
 });
+function updateLoadingBar(value) {
+    loadingBar.style.opacity = "1";
+    loadingBar.style.transition = "opacity 0s linear";
+
+    const percent = value * 100;
+    loadingBar.style.width = percent + "%";
+
+    if (value >= 1) {
+        finishLoading();
+    }
+}
+function finishLoading() {
+    loadingBar.style.width = "100%";
+
+    setTimeout(() => {
+        loadingBar.style.opacity = "0";
+        loadingBar.style.transition = "opacity 0.3s ease";
+    }, 200);
+}
 
 spinePalBtn.addEventListener('click', () => {
     setBackground(spinePalBtn, 'texture');
@@ -726,6 +746,10 @@ function showInViewer(project) {
 
     project.skeletons.forEach(name => {
         loader.add(name, `${basePath}/${name}.json`);
+    });
+
+    loader.onProgress.add((loader, resource) => {
+        updateLoadingBar(loader.progress / 100);
     });
 
     loader.load((_, resources) => {

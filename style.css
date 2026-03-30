@@ -821,6 +821,18 @@ header{
     touch-action: none;
 }
 
+.loading-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    height: 4px;
+    width: 0%;
+
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    transition: width 0.2s ease;
+}
+
 .hidden-panel {
     display: flex;
     width: 100%;
