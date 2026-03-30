@@ -830,7 +830,8 @@ header{
     width: 0%;
 
     background: linear-gradient(90deg, #4facfe, #00f2fe);
-    transition: width 0.2s ease;
+    transition: 0.5s ease;
+    touch-action: none;
 }
 
 .hidden-panel {

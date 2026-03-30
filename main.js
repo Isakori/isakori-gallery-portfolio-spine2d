@@ -332,8 +332,9 @@ hide_button.addEventListener("click", () => {
     }, 250);
 });
 function updateLoadingBar(value) {
+    loadingBar.style.transition = "0s linear";
     loadingBar.style.opacity = "1";
-    loadingBar.style.transition = "opacity 0s linear";
+    loadingBar.style.transition = "0.5s ease";
 
     const percent = value * 100;
     loadingBar.style.width = percent + "%";
@@ -347,7 +348,6 @@ function finishLoading() {
 
     setTimeout(() => {
         loadingBar.style.opacity = "0";
-        loadingBar.style.transition = "opacity 0.3s ease";
     }, 200);
 }
 
