@@ -44,6 +44,20 @@ const viewer_states = ["closed", "minimized", "maximized"];
 let currentViewerState = viewer_states[0];
 const loadingBar = document.querySelector(".loading-bar");
 
+
+const loadingTextElement = document.getElementById("jumpingText");
+const loadingText = loadingTextElement.textContent;
+
+loadingTextElement.textContent = "";
+
+[...loadingText].forEach((char, i) => {
+  const span = document.createElement("span");
+  span.textContent = char;
+  span.style.setProperty("--i", i);
+  loadingTextElement.appendChild(span);
+});
+
+
 const buttons = document.querySelectorAll('.bg-palette-button');
 const spinePalBtn = document.getElementById('spine-bg');
 const pickerPalBtn = document.getElementById('picker-bg');
