@@ -332,7 +332,7 @@ hide_button.addEventListener("click", () => {
     }, 250);
 });
 function updateLoadingBar(value) {
-    loadingBar.style.display = "flex";
+    loadingBar.style.visibility = "visible";
     loadingBar.style.opacity = "1";
     loadingBar.style.transition = "width 0.3s ease";
 
@@ -346,12 +346,12 @@ function updateLoadingBar(value) {
 function finishLoading() {
     loadingBar.style.width = "100%";
     loadingBar.style.opacity = "0";
-    loadingBar.style.transition = "opacity 0.5s ease";
+    loadingBar.style.transition = "opacity 0.2s ease";
 
     setTimeout(() => {
-        loadingBar.style.display = "none";
+        loadingBar.style.visibility = "hidden";
         loadingBar.style.width = "0%";
-    }, 500);
+    }, 200);
 }
 
 spinePalBtn.addEventListener('click', () => {
