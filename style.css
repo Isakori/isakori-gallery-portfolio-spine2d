@@ -1485,6 +1485,15 @@ header{
     .loading-text{
         text-align: end;
         font-size: 24px;
+        text-shadow:
+             2px 0 var(--col-loading-text),
+            -2px 0 var(--col-loading-text),
+             0  2px var(--col-loading-text),
+             0 -2px var(--col-loading-text),
+             2px  2px var(--col-loading-text),
+            -2px -2px var(--col-loading-text),
+             2px -2px var(--col-loading-text),
+            -2px  2px var(--col-loading-text);
     }
     .loading-icon {
         width: 42px;
@@ -1722,6 +1731,15 @@ header{
     .loading-text{
         text-align: end;
         font-size: 18px;
+        text-shadow:
+             1px 0 var(--col-loading-text),
+            -1px 0 var(--col-loading-text),
+             0  1px var(--col-loading-text),
+             0 -1px var(--col-loading-text),
+             1px  1px var(--col-loading-text),
+            -1px -1px var(--col-loading-text),
+             1px -1px var(--col-loading-text),
+            -1px  1px var(--col-loading-text);
     }
     .loading-icon {
         width: 30px;
