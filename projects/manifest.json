@@ -26,25 +26,6 @@
                 },
                 "touch_dango" : {}
             }
-        },
-        {
-            "id": 7,
-            "projectName": "Cursor VFX",
-            "imagePostfix": "_thumbnail.png",
-            "skeletons": [
-                "Blue Archive"
-            ],
-            "tags": [
-                "vfx"
-            ],
-            "metrics": {
-                "spine": "v3.8.75",
-                "bones": 63,
-                "constraints": 0,
-                "slots": 32,
-                "vertices": 128,
-                "triangles": 64
-            }
         }
     ],
     "Mike Mac": [
