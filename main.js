@@ -1935,3 +1935,31 @@ function resetPointer() {
 
 })(app, viewport);
 
+
+/* ---------------------------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------- LIVE BG -------------------------------------------------------------------------- */
+
+// const container = document.getElementById("rings");
+
+// function spawnRing() {
+//     const ring = document.createElement("div");
+//     ring.className = "ring";
+    
+//     const size = 80 + Math.random() * 120; // размер круга
+//     const x = Math.random() * window.innerWidth;
+//     const y = Math.random() * window.innerHeight;
+//     const duration = 2 + Math.random() * 3;
+    
+//     ring.style.width = size + "px";
+//     ring.style.height = size + "px";
+//     ring.style.left = x + "px";
+//     ring.style.top = y + "px";
+//     ring.style.animationDuration = duration + "s";
+    
+//     container.appendChild(ring);
+    
+//     setTimeout(() => ring.remove(), duration * 1000);
+// }
+
+/* спавн с разными интервалами */
+// setInterval(spawnRing, 500 + Math.random() * 1000);

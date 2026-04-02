@@ -115,6 +115,7 @@
 
 html{
     font-size: 14px;
+    background: black;
 }
 
 body{
@@ -140,23 +141,106 @@ div, button{
     user-select: none;
 }
 
-.background{
+.bg-holder {
     position: fixed;
-    top: -4rem;
-    left: -4rem;
-    background: var(--col-theme-background) no-repeat center center;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    width: calc(100vw + 8rem);
-    height: calc(100vh + 8rem);
-    z-index: -10;
-    transform: scale(1.2);
-    filter: var(--var-glass-filter) brightness(1);
+    inset: 0;
+    z-index: -5;
+    overflow: hidden;
+    
+    background: linear-gradient(to bottom,
+            rgb(38, 37, 63),
+            rgb(56, 59, 85),
+            rgb(38, 37, 63));
+}
+.bg-holder::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(#1a1720 2px, transparent 0);
+    background-size: 100px 100px;
 }
 
-#bg-overlay{
+/* .bg-holder::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: 48%;
+
+    background: linear-gradient(to bottom,
+            rgb(48, 45, 73),
+            rgb(80, 88, 116));
+    filter: blur(200px);
+} */
+
+/* .bg-mask {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    
+    --s: 200px;
+    --n: 1;
+    --t: 2px;
+    --g: 0px;
+    
+    --c: white 25%, transparent 0;
+    
+    -webkit-mask:
+      conic-gradient(at var(--g) var(--t), var(--c))
+        calc((var(--s)/var(--n) - var(--g) + var(--t))/2) 0 /
+        calc(var(--s)/var(--n)) var(--s),
+      conic-gradient(from 180deg at var(--t) var(--g), var(--c))
+        0 calc((var(--s)/var(--n) - var(--g) + var(--t))/2) /
+        var(--s) calc(var(--s)/var(--n));
+    
+    mask:
+      conic-gradient(at var(--g) var(--t), var(--c))
+        calc((var(--s)/var(--n) - var(--g) + var(--t))/2) 0 /
+        calc(var(--s)/var(--n)) var(--s),
+      conic-gradient(from 180deg at var(--t) var(--g), var(--c))
+        0 calc((var(--s)/var(--n) - var(--g) + var(--t))/2) /
+        var(--s) calc(var(--s)/var(--n));
+
+    background-color: rgb(36, 35, 54);
+} */
+
+/* .ring {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+
+    border: 4px solid rgb(255, 255, 50);
+    box-shadow: 0 0 80px rgba(255, 27, 35, 0.555);
+
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+
+    animation: ringExpand linear forwards;
+    filter: blur(4px);
+} */
+
+/* @keyframes ringExpand {
+    0% {
+        border: 4px solid white;
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 1;
+    }
+    40% {
+        border: 4px solid rgb(255, 255, 50);
+    }
+    70% {
+        opacity: 0.7;
+    }
+    100% {
+        border: 4px solid rgb(255, 27, 35);
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+} */
+
+/* #bg-overlay{
     position: fixed;
     top: 0;
     width: 100vw;
@@ -164,7 +248,7 @@ div, button{
     z-index: -5;
     background-color: var(--col-theme-bg-overlay);
 }
-
+ */
 /* -------------------------------------------------------------- header */
 
 header{
@@ -737,6 +821,7 @@ header{
     position: absolute;
     inset: 0;
     border-radius: inherit;
+
     box-shadow: 0 2px 12px #00000080;
     opacity: 0;
     transition: opacity ease .2s;
