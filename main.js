@@ -345,6 +345,7 @@ hide_button.addEventListener("click", () => {
         unloadCurrentProject();
     }, 250);
 });
+// -------- Попакетный загрузчик --------
 function updateLoadingBar(value) {
     loadingBar.style.visibility = "visible";
     loadingBar.style.opacity = "1";
@@ -357,6 +358,26 @@ function updateLoadingBar(value) {
         finishLoading();
     }
 }
+// -------- Побайтовый загрузчик --------
+function updateByteLoadingBar(projectSize) {
+
+    let loadedBytes = 0;
+
+    for (const request of loadingByteTracker.requests.values()) {
+        loadedBytes += request.loaded;
+    }
+
+    if (!projectSize || projectSize <= 0) {
+        return;
+    }
+
+    const progress = loadedBytes / projectSize;
+
+    updateLoadingBar(
+        Math.min(progress, 0.99)
+    );
+}
+// -------- / --------
 function finishLoading() {
     loadingBar.style.width = "100%";
     loadingBar.style.opacity = "0";
@@ -431,14 +452,38 @@ function clearDebug() {
 /* ----------------------------------------------------------------------------- Loading projects */
 
 async function loadProjects() {
-    const response = await fetch("./projects/manifest.json");
-    const manifest = await response.json();
+    /* const [manifestResponse, sizesResponse] = await Promise.all([
+        fetch("./projects/manifest.json"),
+        fetch("./projects/sizes.json")
+    ]); */
+    const manifestResponse = await fetch("./projects/manifest.json");
+    const manifest = await manifestResponse.json();
+    // const sizes = await sizesResponse.json();
+
+    let sizes = {};
+
+    try {
+        const sizesResponse = await fetch("./projects/sizes.json");
+
+        if (sizesResponse.ok) {
+            sizes = await sizesResponse.json();
+        } else {
+            console.warn(
+                `sizes.json недоступен (${sizesResponse.status}). ` +
+                "Будет использоваться обычный прогресс загрузчика."
+            );
+        }
+
+    } catch (error) {
+        console.warn("Не удалось загрузить sizes.json. Будет использоваться обычный прогресс загрузчика.");
+    }
 
     const projects = [];
 
     for (const assetAuthor in manifest) {
         const assetAuthorProjects = manifest[assetAuthor];
         assetAuthorProjects.forEach((proj) => {
+            const projectSize = sizes?.[assetAuthor]?.[proj.id];
             projects.push({
                 assetAuthor,
                 id: proj.id,
@@ -448,6 +493,9 @@ async function loadProjects() {
                 tags: proj.tags,
                 metrics: proj.metrics,
                 boundsDimensions: proj.bounds,
+                size: Number.isFinite(projectSize)
+                    ? projectSize
+                    : null,
                 path: `./projects/${assetAuthor}/${proj.id}`,
                 thumbnail: `./projects/${assetAuthor}/${proj.id}/${proj.projectName}${proj.imagePostfix}`
             });
@@ -693,6 +741,11 @@ function setViewerSize(state) {
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 
+PIXI.LoaderResource.setExtensionLoadType(
+    "png",
+    PIXI.LoaderResource.LOAD_TYPE.XHR
+);
+
 let currentSpines = [];
 let interactiveBounds = [];
 let activeTickers = [];
@@ -741,6 +794,76 @@ function clearTickers() {
     activeTickers.length = 0;
 }
 
+// -------- Побайтовый загрузчик --------
+const loadingByteTracker = {
+    active: false,
+    projectSize: 0,
+    requests: new Map()
+};
+(function installLoadingByteTracker() {
+
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function(method, url, ...args) {
+
+        this._loadingTrackerURL = url;
+
+        return originalOpen.call(
+            this,
+            method,
+            url,
+            ...args
+        );
+    };
+
+    XMLHttpRequest.prototype.send = function(...args) {
+
+        const xhr = this;
+
+        if (
+            loadingByteTracker.active &&
+            xhr._loadingTrackerURL
+        ) {
+
+            const request = {
+                loaded: 0
+            };
+
+            loadingByteTracker.requests.set(
+                xhr,
+                request
+            );
+
+            xhr.addEventListener("progress", event => {
+                request.loaded = event.loaded;
+                updateByteLoadingBar(
+                    loadingByteTracker.projectSize
+                );
+            });
+
+            xhr.addEventListener("loadend", () => {
+                request.loaded = Math.max(
+                    request.loaded,
+                    0
+                );
+
+                updateByteLoadingBar(
+                    loadingByteTracker.projectSize
+                );
+            });
+        }
+
+
+        return originalSend.apply(
+            this,
+            args
+        );
+    };
+
+})();
+// --------  --------
+
 function showInViewer(project) {
     const loaderElement = document.getElementById("loading-screen");
     loaderElement.classList.remove("hidden");
@@ -751,6 +874,7 @@ function showInViewer(project) {
 
     const loader = new PIXI.Loader();
     const basePath = project.path;
+    const useByteProgress = Number.isFinite(project.size) && project.size > 0;
     currentSpines = [];
     interactiveBounds = [];
 
@@ -765,11 +889,24 @@ function showInViewer(project) {
         loader.add(name, `${basePath}/${name}.json`);
     });
 
-    loader.onProgress.add((loader, resource) => {
-        updateLoadingBar(loader.progress / 100);
-    });
+    if (useByteProgress) {
+        // -------- Новый способ отслеживания загруженных пакетов --------
+        loadingByteTracker.active = true;
+        loadingByteTracker.projectSize = project.size;
+        loadingByteTracker.requests.clear();
+        updateLoadingBar(0);
+    } else {
+        // -------- Старый способ... --------
+        loader.onProgress.add((loader, resource) => {
+            updateLoadingBar(loader.progress / 100);
+        });
+    }
 
     loader.load((_, resources) => {
+        loadingByteTracker.active = false;
+        updateLoadingBar(1);
+        loadingByteTracker.projectSize = 0;
+
         let loadedSkeletons = [];
 
         project.skeletons.forEach((name, index) => {
