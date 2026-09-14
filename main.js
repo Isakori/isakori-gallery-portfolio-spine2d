@@ -10,7 +10,7 @@ const interactionSwitcher = document.querySelector(".viewport-interaction-switch
 const display_type_list = document.querySelector(".displayingbar");
 const display_type_list1 = document.querySelector(".displayingbar.side");
 const gallery_styles = ["perfect-grid", "adaptive-flex", "cardfall"];
-let currentDisplayType = localStorage.getItem("displayType") || gallery_styles[0];
+let currentDisplayType = localStorage.getItem("displayType") || gallery_styles[2];
 /* ----------------------------------------------------------------------------- 3 */
 const filters = document.querySelectorAll(".filter-button");
 const filters1 = document.querySelectorAll(".filter-button1");
@@ -34,8 +34,8 @@ const sidebar_button = document.querySelector('.burger-button');
 const sidebar_close_button = document.querySelector('.sidebar-close-button');
 const sidebar = document.querySelector('.sidebar');
 const hidden_show_button = document.querySelector('.hidden-show-button');
-const hidden_close_button = document.querySelector('.hidden-panel-close-button');
-const hidden_panel = document.querySelector('.hidden-panel');
+const hidden_close_button = document.querySelector('.hidden-viewer-panel-close-button');
+const hidden_panel = document.querySelector('.hidden-viewer-panel');
 /* ----------------------------------------------------------------------------- 6 */
 const viewer = document.querySelector("#viewer");
 const size_button = document.getElementById("viewer-size-button");
@@ -43,7 +43,14 @@ const hide_button = document.getElementById("viewer-hide-button");
 const viewer_states = ["closed", "minimized", "maximized"];
 let currentViewerState = viewer_states[0];
 const loadingBar = document.querySelector(".loading-bar");
-
+/* ----------------------------------------------------------------------------- 7 */
+const playerPlaybackButton = document.querySelector(".player-playback-button");
+const playerHolder = document.querySelector(".player-holder");
+const playerTimeline = document.querySelector(".player-timeline");
+const playerTimelineTrack = document.querySelector(".player-timeline-track");
+const playerTimelineTrackShell = document.querySelector(".player-timeline-track-shell");
+const playerTimelineMarker = document.querySelector(".player-timeline-marker");
+let isDraggingTimeline = false;
 
 const loadingTextElement = document.getElementById("jumpingText");
 const loadingText = loadingTextElement.textContent;
@@ -68,6 +75,29 @@ const debugList = document.getElementById("debug-list");
 
 const gallery_grid = document.getElementById("gallery-grid");
 const loader = PIXI.Loader.shared;
+
+let activeSkeleton = null;
+
+/* ------------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------- DOM */
+
+const mobileQuery = window.matchMedia('(max-width: 576px)');
+const viewportFunctions = document.querySelector(".viewport-functions");
+const metricsHiddenHolder = document.querySelector(".metrics-hidden-holder");
+const defaultViewportPanel = document.querySelector(".default-viewer-panel");
+
+function updatePlayerLayout() {
+    if (mobileQuery.matches) {
+        hidden_panel.appendChild(viewportFunctions);
+        viewportFunctions.appendChild(metricsPanel);
+    } else {
+        metricsHiddenHolder.appendChild(metricsPanel);
+        defaultViewportPanel.appendChild(viewportFunctions);
+    }
+}
+
+mobileQuery.addEventListener('change', updatePlayerLayout);
+updatePlayerLayout();
 
 /* ------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- 1 */
@@ -447,6 +477,39 @@ function clearDebug() {
         element.querySelector('.check-off').classList.add('visible');
     });
 }
+/* ----------------------------------------------------------------------------- 7 */
+playerPlaybackButton.addEventListener('click', e => {
+    toggleAnimation(
+        document.querySelector(".anim-button.active"),
+        activeSkeleton
+    );
+});
+playerTimelineTrackShell.addEventListener("click", (event) => {
+    seekTimeline(event.clientX);
+});
+playerTimelineTrackShell.addEventListener("pointerdown", (event) => {
+    isDraggingTimeline = true;
+    playerTimelineTrackShell.setPointerCapture(event.pointerId);
+
+    const track = activeSkeleton.state.getCurrent(0);
+
+    if (track.timeScale !== 0) {
+        toggleAnimation(
+            document.querySelector(".anim-button.active"),
+            activeSkeleton
+        );
+    }
+    seekTimeline(event.clientX);
+});
+playerTimelineTrackShell.addEventListener("pointermove", (event) => {
+    if (!isDraggingTimeline) return;
+
+    seekTimeline(event.clientX);
+});
+playerTimelineTrackShell.addEventListener("pointerup", (event) => {
+    isDraggingTimeline = false;
+    playerTimeline.releasePointerCapture(event.pointerId);
+});
 
 /* ---------------------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- Loading projects */
@@ -760,6 +823,7 @@ function unloadCurrentProject(nextProject = null) {
     clearTickers();
     app.stage.removeAllListeners();
     app.stage.interactive = false;
+    playerHolder.classList.add("hidden");
     currentSpines.forEach(spine => {
         viewport.removeChild(spine);
         spine.destroy({ children: true, texture: false, baseTexture: false });
@@ -782,13 +846,13 @@ function unloadCurrentProject(nextProject = null) {
 }
 
 function addTicker(fn) {
-    if (!activeTickers.includes(fn)) {
+    if (!activeTickers.includes(fn)) {        
         app.ticker.add(fn);
         activeTickers.push(fn);
     }
 }
 function clearTickers() {
-    for (const fn of activeTickers) {
+    for (const fn of activeTickers) {        
         app.ticker.remove(fn);
     }
     activeTickers.length = 0;
@@ -1143,6 +1207,9 @@ function showInViewer(project) {
 
             // Первый скелет активен по умолчанию
             if (index === 0) selectSkeleton(spine);
+
+            // app.ticker.add(updateTimeline);
+            addTicker(updatePlayerTimeline);
         });
         
         pushMetrics("Asset author", project.assetAuthor);
@@ -1184,6 +1251,7 @@ function pushMetrics(name, value) {
 }
 
 function selectSkeleton(spine) {
+    activeSkeleton = spine;
     // Обновление активности в меню
     skeletonMenu.querySelectorAll(".dropdown-item").forEach(btn => btn.classList.remove("active"));
     const activeBtn = Array.from(skeletonMenu.children).find(li => li.textContent.trim() === spine.name);
@@ -1199,6 +1267,10 @@ function selectSkeleton(spine) {
 
     const sortedAnims = [...spine.spineData.animations].map(a => a.name).filter(name => !name.startsWith("int_")).sort(a => a === "-default" ? -1 : 1);
 
+    const spineObj = currentSpines.find(s => s.name === spine.name);
+    const currentTrack = spineObj?.state.getCurrent(0);
+    const currentAnim = currentTrack?.animation?.name;
+
     sortedAnims.forEach((anim, index) => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
@@ -1206,26 +1278,109 @@ function selectSkeleton(spine) {
         btn.dataset.anim = anim;
         btn.dataset.state = "stopped";
 
-        const playIcon = svgPlay;
-        btn.innerHTML = `${playIcon}${anim}`;
+        const isCurrent = anim === currentAnim;
+        const isPlaying = isCurrent && currentTrack.timeScale !== 0;
+
+        btn.innerHTML = `
+            ${isPlaying ?
+                (anim === "-default" ? svgDefaultStop : svgStop) :
+                (anim === "-default" ? svgDefaultPlay : svgPlay)}
+            ${anim}
+        `;
+        playerPlaybackButton.innerHTML = `
+            ${isPlaying ?
+                svgPlayerStop :
+                svgPlayerPlay}
+        `;
+
+        if (isCurrent) {
+            btn.classList.add("active");
+            btn.dataset.state = isPlaying ? "playing" : "paused";
+        }
 
         btn.addEventListener("click", () => toggleAnimation(btn, spine));
+
         li.appendChild(btn);
         animationList.appendChild(li);
-
-        if (index === 0) {
-            btn.classList.add("active");
-            playAnimation(spine, anim);
-            btn.dataset.state = "playing";
-            btn.innerHTML = `${svgDefaultStop}${anim}`;
-        }
     });
+
+    updateTimelineVisibility(currentAnim);
+}
+
+/* ------------------------------------------------------- ANIMATION ------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------- */
+
+function updateTimelineVisibility(animName) {
+    playerHolder.classList.toggle("hidden", animName === "-default");
+    /* document.querySelectorAll(".hideable-when-default-anim").forEach(el => {
+        el.classList.toggle("hidden", animName === "-default");
+    }); */
+}
+
+function updatePlayerTimeline() {
+    if (!activeSkeleton) return;
+
+    const spineObj = currentSpines.find(s => s.name === activeSkeleton.name);
+    if (!spineObj) return;
+
+    const track = spineObj.state.getCurrent(0);
+
+    if (!track || !track.animation) return;
+
+    const duration = track.animation.duration;
+
+    if (duration <= 0) {
+        playerTimelineMarker.style.left = "0%";
+        return;
+    }
+
+    const time = track.trackTime % duration;
+    const progress = time / duration;
+
+    playerTimelineMarker.style.left = `${progress * 100}%`;
+}
+
+function seekTimeline(clientX) {
+    if (!activeSkeleton) return;
+
+    const spineObj = currentSpines.find(s => s.name === activeSkeleton.name);
+    if (!spineObj) return;
+
+    const track = spineObj.state.getCurrent(0);
+
+    if (!track || !track.animation) return;
+
+    const duration = track.animation.duration;
+    if (duration <= 0) return;
+
+    const rect = playerTimelineTrack.getBoundingClientRect();
+
+    let progress = (clientX - rect.left) / rect.width;
+    progress = Math.max(0, Math.min(1, progress));
+
+    // track.trackTime = progress * duration;
+    const epsilon = 0.0001;
+    track.trackTime = Math.min(progress * duration, duration - epsilon);
+
+    playerTimelineMarker.style.left = `${progress * 100}%`;
+}
+
+function getCurrentTrack(skeleton) {
+    const spineObj = currentSpines.find(s => s.name === skeleton.name);
+    if (!spineObj) return null;
+
+    return spineObj.state.getCurrent(0);
 }
 
 // Триггер кнопки анимации
 function toggleAnimation(button, skeleton, shouldToggle = true) {
     const currentAnim = button.dataset.anim;
     const isDefault = currentAnim === "-default";
+
+    /* document.querySelectorAll(".hideable-when-default-anim").forEach(el => {
+        el.classList.toggle("hidden", isDefault)
+    }); */
+    playerHolder.classList.toggle("hidden", isDefault);
 
     const allButtons = document.querySelectorAll(".anim-button");
     allButtons.forEach(b => {
@@ -1242,11 +1397,17 @@ function toggleAnimation(button, skeleton, shouldToggle = true) {
         pauseAnimation(skeleton, currentAnim);
         button.dataset.state = "paused";
         button.innerHTML = `${(isDefault ? svgDefaultPlay : svgPlay)}${currentAnim}`;
+
+        playerPlaybackButton.dataset.state = "paused";
+        playerPlaybackButton.innerHTML = `${svgPlayerPlay}`;
     } else {
         playAnimation(skeleton, currentAnim);
         button.dataset.state = "playing";
         button.classList.add("active");
         button.innerHTML = `${(isDefault ? svgDefaultStop : svgStop)}${currentAnim}`;
+
+        playerPlaybackButton.dataset.state = "playing";
+        playerPlaybackButton.innerHTML = `${svgPlayerStop}`;
     }
 }
 
@@ -1257,6 +1418,8 @@ const svgDefaultPlay = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmln
 const svgDefaultStop = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="none" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
 const svgPlay = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M5.008 12.897a.644.644 0 0 1-.91-.227.719.719 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182l-6.677 4.306z"/></svg>`;
 const svgStop = `<svg width="16px" height="16px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
+const svgPlayerPlay = `<svg width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M5.008 12.897a.644.644 0 0 1-.91-.227.719.719 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182l-6.677 4.306z"/></svg>`;
+const svgPlayerStop = `<svg width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" fill="currentColor" d="M4.667 3h6.666C12.253 3 13 3.746 13 4.667v6.666c0 .92-.746 1.667-1.667 1.667H4.667C3.747 13 3 12.254 3 11.333V4.667C3 3.747 3.746 3 4.667 3z"/></svg>`;
 
 // Вспомогательные функции для Spine
 function playAnimation(skeleton, animName) {
@@ -1493,7 +1656,7 @@ function playTouchInteraction(spine, areaName) {
 
 function switchInteractionMode(isActive) {
     if (isActive) {
-        document.querySelectorAll(".hideable").forEach(element => {
+        document.querySelectorAll(".hideable-when-interaction").forEach(element => {
             element.style.display = "none";
             isInteractiveMode = true;
             viewport.drag({ mouseButtons: 'right' });
@@ -1503,7 +1666,7 @@ function switchInteractionMode(isActive) {
             });
         });
     } else {
-        document.querySelectorAll(".hideable").forEach(element => {
+        document.querySelectorAll(".hideable-when-interaction").forEach(element => {
             element.style.display = "";
             isInteractiveMode = false;
             currentSpines.forEach(spine => {

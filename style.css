@@ -661,6 +661,8 @@ header{
     width: 100%;
 }
 
+/* -------------------------------------------------------------- /sidebar */
+
 /* -------------------------------------------------------------- main */
 
 .gallery-place-holder{
@@ -868,7 +870,7 @@ header{
     transform: translateZ(0);
 }
 
-/* ---------------------------------------- */
+/* -------------------------------------------------------------- /gallery grid */
 
 /* -------------------------------------------------------------- viewport */
 
@@ -921,7 +923,21 @@ header{
     touch-action: none;
 }
 
-.hidden-panel {
+/* ------------------------------------------------- default-viewer-panel */
+
+.default-viewer-panel {
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* ------------------------------------------------- /default-viewer-panel */
+
+/* ------------------------------------------------- hidden-viewer-panel */
+
+.hidden-viewer-panel {
     display: flex;
     width: 100%;
     height: 100%;
@@ -931,12 +947,15 @@ header{
     will-change: transform;
 }
 
-.hidden-panel-close-button {
+.hidden-viewer-panel-close-button {
     display: none;
 }
 
+/* ------------------------------------------------- /hidden-viewer-panel */
+
 .viewport-functions {
     display: flex;
+    position: relative;
     width: 100%;
     height: 100%;
 }
@@ -959,6 +978,8 @@ header{
     left: 1rem;
     top: 1rem;
 }
+
+/* ------------------------------------------------- background */
 
 .background-palette {
     display: flex;
@@ -1012,6 +1033,10 @@ header{
     color: white;
     background-color: var(--col-theme-accent);
 }
+
+/* ------------------------------------------------- /background */
+
+/* ------------------------------------------------- debug menu */
 
 #debug-panel {
     will-change: width, height, border-radius, padding;
@@ -1081,6 +1106,8 @@ header{
     display: flex;
 }
 
+/* ------------------------------------------------- /debug menu */
+
 .viewer-button{
     will-change: background-color;
     display: flex;
@@ -1122,8 +1149,6 @@ header{
     display: none;
 }
 .viewport-interaction-switch.active {
-    /* background-color: rgb(248, 229, 73); */
-    /* background-image: linear-gradient(to bottom right, rgb(235, 224, 71), rgb(250, 197, 30)); */
     background-image: conic-gradient(
             from 135deg at 72% 70%,
             rgb(253, 218, 50) 0deg,
@@ -1149,6 +1174,9 @@ header{
 .viewport-interaction-switch:active {
     transform: scale(0.9);
 }
+
+/* ------------------------------------------------- animation menu */
+
 .animation-panel{
     position: absolute;
     right: 1rem;
@@ -1272,44 +1300,149 @@ header{
     display: block;
 }
 
-.focus-button {
+/* ------------------------------------------------- /animation menu */
+
+/* -------------------------------------------------------------- lower viewer panel */
+
+.lower-viewer-panel {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
     position: absolute;
-    left: .5rem;
-    bottom: .5rem;
+    bottom: 0;
+    height: fit-content;
+    width: 100%;
+    /* border: 2px solid black; */
+    z-index: 1;
+}
+
+.focus-button-holder {
+    display: flex;
+    justify-content: start;
+    align-items: end;
+    flex-grow: 1;
+    flex-shrink: 2;
+    flex-basis: 0;
+    border-radius: var(--var-card-border-radius);
+    /* border: 1px solid hotpink; */
+}
+
+.focus-button {
+    pointer-events: auto;
+    margin: 0 0 .5rem .5rem;
     cursor: pointer;
     color: var(--col-btn-secondary);
+    z-index: 10;
 }
 .focus-button:hover {
     color: var(--col-btn-primary);
 }
 
-.hidden-show-button {
-    position: absolute;
-    right: 1rem;
-    bottom: 1rem;
-    cursor: pointer;
-    color: var(--col-theme-text);
+/* ------------------------------------------------- player */
+
+.player-holder{
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    justify-content: end;
+    align-items: center;
+    width: fit-content;
+    border-radius: var(--var-card-border-radius);
+    z-index: 3;
+    /* border: 1px solid darkturquoise; */
+}
+.player-timeline-panel{
+    display: flex;
+    align-items: center;
+    pointer-events: auto;
+    border-radius: 50px;
+    height: 48px;
+    width: 100%;
+    min-width: 200px;
+    margin: 0 0 1rem 0;
+    z-index: 3;
+    background-color: var(--col-theme-accent);
+}
+
+.player-timeline {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 20px 0 0;
+}
+
+.player-playback-button {
+    display: flex;
     justify-content: center;
     align-items: center;
-    height: 56px;
-    width: 56px;
-    border: none;
-    border-radius: 999px;
-    background-color: var(--col-theme-accent);
-    z-index: 1;
-    user-select: none;
-    display: none;
+    min-width: 36px;
+    width: 36px;
+    height: 36px;
+    margin-left: 10px;
+    color: var(--col-theme-text);
+    /* border: 1px white solid; */
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.player-timeline-track {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background: #aaa;
+    border-radius: 2px;
+}
+
+.player-timeline-track-shell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 28px;
+    cursor: pointer;
+}
+
+.player-timeline-marker {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 10px;
+    height: 10px;
+    background: var(--col-theme-text);
+    border: 2px solid var(--col-theme-text);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* ------------------------------------------------- /player */
+
+.metrics-hidden-holder{
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    justify-content: end;
+    align-items: end;
+    border-radius: var(--var-card-border-radius);
+    /* border: 1px solid gold; */
 }
 
 .metrics-panel {
     will-change: width;
-    position: absolute;
     display: flex;
     flex-direction: column;
     pointer-events: auto;
     width: 160px;
-    right: 1rem;
-    bottom: 1rem;
+    min-width: 160px;
+    height: fit-content;
+    margin: 0 1rem 1rem 0;
     z-index: 2;
     overflow: hidden;
     transition: width ease .1s;
@@ -1347,6 +1480,25 @@ header{
     color: var(--col-theme-text);
     border-top: 1px solid var(--col-panel-separator);
 }
+
+.hidden-show-button {
+    pointer-events: auto;
+    margin: 0 1rem 1rem 0;
+    cursor: pointer;
+    color: var(--col-theme-text);
+    justify-content: center;
+    align-items: center;
+    height: 56px;
+    width: 56px;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--col-theme-accent);
+    z-index: 1;
+    user-select: none;
+    display: none;
+}
+
+/* -------------------------------------------------------------- /lower viewer panel */
 
 .anim-button.active, .dropdown-item.active, .switch-button.active,
 .info-button.active, .guide-button.active {
@@ -1522,6 +1674,8 @@ header{
 #loading-screen.hidden svg {
     animation-play-state: paused;
 }
+/* -------------------------------------------------------------- /loading icon */
+/* -------------------------------------------------------------- /viewport */
 
 /* ---------------------------------------------------- TABLET --------------------------------------------------------------- */
 @media (max-width: 1400px) {
@@ -1652,12 +1806,12 @@ header{
         height: fit-content;
     }
 
-    .hidden-panel {
+    .hidden-viewer-panel {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 50%;
+        height: 60%;
         pointer-events: auto;
         display: flex;
         flex-direction: column;
@@ -1666,17 +1820,17 @@ header{
         transition: transform ease .2s;
         transform: translateY(100%);
     }
-    .hidden-panel.open {
+    .hidden-viewer-panel.open {
         transform: translateY(0);
     }
 
-    .hidden-panel-header {
+    .hidden-viewer-panel-header {
         display: flex;
         justify-content: end;
         align-items: center;
         margin: 16px;
     }
-    .hidden-panel-close-button {
+    .hidden-viewer-panel-close-button {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -1780,6 +1934,10 @@ header{
         height: 40px;
     }
 
+    .player-holder{
+        flex-grow: 4;
+    }
+
     .hidden-show-button {
         display: flex;
     }
@@ -1790,21 +1948,21 @@ header{
         display: none;
     }
     .perfect-grid {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
     .perfect-grid > .card-wrapper{
         height: 160px;
-        width: 120px;
+        width: 160px;
     }
 }
 
 @media (max-width: 375px) {
     .perfect-grid {
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
     .perfect-grid > .card-wrapper{
         height: 140px;
-        width: 100px;
+        width: 140px;
     }
 
     #loading-indicator {
@@ -1830,14 +1988,18 @@ header{
         width: 30px;
         height: 30px;
     }
+
+    .lower-viewer-panel {
+        gap: .5rem;
+    }
 }
 
 @media (max-width: 320px) {
     .perfect-grid {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
     .perfect-grid > .card-wrapper{
-        height: 150px;
-        width: 120px;
+        height: 240px;
+        width: 280px;
     }
 }
