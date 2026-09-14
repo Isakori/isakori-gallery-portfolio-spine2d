@@ -1406,6 +1406,9 @@ header{
     width: 100%;
     height: 28px;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
 }
 
 .player-timeline-marker {
