@@ -54,10 +54,12 @@ let isDraggingTimeline = false;
 let playerSpeed = 1;
 let playerPaused = false;
 let playerRotorAngle = 90;
+const playerSpeedRotorHolder = document.querySelector(".player-speed-rotor-holder");
+const playerRotorRail = document.querySelector(".player-rotor-rail");
 const playerSpeedRotor = document.querySelector(".player-speed-rotor");
 const playerSpeedValue = document.querySelector(".player-speed-value");
-const playerRotorArrowLeft = document.getElementById("rotor-arrow-left");
-const playerRotorArrowRight = document.getElementById("rotor-arrow-right");
+const playerRotorPullDistance = 6;
+let playerRotorPullX = 0;
 let isRotorDragging = false;
 let rotorStartX = 0;
 let rotorStartAngle = 90;
@@ -526,13 +528,15 @@ playerTimelineTrackShell.addEventListener("pointerup", (event) => {
     playerTimeline.releasePointerCapture(event.pointerId);
 });
 
-/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------- */
 
 playerSpeedRotor.addEventListener("pointerdown", (event) => {
     rotorMoved = false;
     isRotorDragging = true;
     rotorStartX = event.clientX;
     rotorStartAngle = playerRotorAngle;
+
+    playerRotorRail.classList.add('highlighted');
 
     playerSpeedRotor.setPointerCapture(event.pointerId);
 });
@@ -543,8 +547,6 @@ playerSpeedRotor.addEventListener("pointermove", (event) => {
 
     if (Math.abs(deltaX) > 0.5) {
         rotorMoved = true;
-        playerRotorArrowLeft.classList.add('hint');
-        playerRotorArrowRight.classList.add('hint');
     }
 
     // Чувствительность вращения
@@ -559,12 +561,19 @@ playerSpeedRotor.addEventListener("pointermove", (event) => {
     playerRotorAngle = angle;
     playerSpeed = rotorAngleToSpeed(angle);
 
+    /* playerRotorPullX = Math.max(
+        -playerRotorPullDistance,
+        Math.min(playerRotorPullDistance, deltaX * 0.1)
+    ); */
+    playerRotorPullX = getRotorPull(deltaX);
+
     updateSpeedRotor();
 });
 playerSpeedRotor.addEventListener("pointerup", (event) => {
     isRotorDragging = false;
-    playerRotorArrowLeft.classList.remove('hint');
-    playerRotorArrowRight.classList.remove('hint');
+    playerRotorPullX = 0;
+    playerRotorRail.classList.remove('highlighted');
+    updateSpeedRotor();
     playerSpeedRotor.releasePointerCapture(event.pointerId);
 });
 playerSpeedRotor.addEventListener("click", () => {
@@ -572,7 +581,6 @@ playerSpeedRotor.addEventListener("click", () => {
 
     playerRotorAngle = 90;
     playerSpeed = 1;
-
     updateSpeedRotor();
 });
 
@@ -1400,6 +1408,7 @@ function resetSpeedRotor(animSpeed = 1) {
 }
 function updateSpeedRotor() {
     playerSpeedRotor.style.transform = `rotate(${playerRotorAngle}deg)`;
+    playerSpeedRotorHolder.style.transform = `translateX(${playerRotorPullX}px)`;
     playerSpeedValue.textContent = formatSpeed(playerSpeed);
 
     const spineObj = currentSpines.find(s => s.name === activeSkeleton.name);
@@ -1436,6 +1445,14 @@ function snapRotorAngle(angle) {
 }
 function formatSpeed(speed) {
     return Number(speed.toFixed(1)).toString();
+}
+function getRotorPull(deltaX) {
+    const resistance = 0.02;
+
+    const sign = Math.sign(deltaX);
+    const distance = Math.abs(deltaX);
+
+    return sign * playerRotorPullDistance * (1 - Math.exp(-distance * resistance));
 }
 
 function updateTimelineVisibility(animName) {

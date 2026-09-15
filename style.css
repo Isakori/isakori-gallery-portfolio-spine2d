@@ -1353,6 +1353,7 @@ header{
     align-items: end;
     width: fit-content;
     padding: 0 0 1rem 0;
+    gap: 2rem;
     border-radius: var(--var-card-border-radius);
     z-index: 3;
     /* border: 1px solid darkturquoise; */
@@ -1360,62 +1361,21 @@ header{
 
 .player-rotor-structure {
     display: flex;
-    /* gap: 4px; */
+    justify-content: center;
+    align-items: center;
+    position: relative;
 }
 
-#rotor-arrow-left {
-    height: 48px;
-    transform: scaleX(-0.5);
-    color: #aaa;
+.player-rotor-rail {
+    position: absolute;
+    width: 200%;
+    border-radius: 2px;
+    height: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.233);
+    transition: .3s ease;
 }
-#rotor-arrow-right {
-    height: 48px;
-    transform: scaleX(0.5);
-    color: #aaa;
-}
-#rotor-arrow-left.hint {
-    color: var(--col-theme-text);
-    animation:
-        arrow-left-move 2s infinite;
-    animation-delay: 0s;
-}
-#rotor-arrow-right.hint {
-    color: var(--col-theme-text);
-    animation:
-        arrow-right-move 2s infinite;
-    animation-delay: 1s;
-}
-@keyframes arrow-left-move {
-    0% {
-        color: var(--col-theme-text);
-        transform: scaleX(-0.5) translateX(0);
-        animation-timing-function: ease;
-    }
-    20% {
-        color: #aaa;
-        transform: scaleX(-0.5) translateX(100%);
-        animation-timing-function: ease;
-    }
-    40% {
-        color: var(--col-theme-text);
-        transform: scaleX(-0.5) translateX(0);
-    }
-}
-@keyframes arrow-right-move {
-    0% {
-        color: var(--col-theme-text);
-        transform: scaleX(0.5) translateX(0);
-        animation-timing-function: ease;
-    }
-    20% {
-        color: #aaa;
-        transform: scaleX(0.5) translateX(100%);
-        animation-timing-function: ease;
-    }
-    40% {
-        color: var(--col-theme-text);
-        transform: scaleX(0.5) translateX(0);
-    }
+.player-rotor-rail.highlighted {
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 .player-speed-rotor-holder {
@@ -1423,6 +1383,7 @@ header{
     display: flex;
     justify-content: center;
     align-items: center;
+    /* transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1); */
 }
 .player-speed-rotor-circuit-holder {
     position: relative;
@@ -1453,7 +1414,7 @@ header{
     height: 100%;
     width: 100%;
     pointer-events: auto;
-    cursor: pointer;
+    cursor: ew-resize;
 }
 .player-speed-rotor-marker {
     border-radius: 2px;
@@ -1489,7 +1450,6 @@ header{
     height: 48px;
     width: 100%;
     min-width: 200px;
-    margin-left: 1rem;
     z-index: 3;
     background-color: var(--col-theme-accent);
 }
@@ -2093,13 +2053,9 @@ header{
         height: 40px;
     }
 
-    #rotor-arrow-left {
-        height: 36px;
+    .player-rotor-rail {
+        width: 240%;
     }
-    #rotor-arrow-right {
-        height: 36px;
-    }
-
     .player-speed-rotor-circuit-holder {
         height: 36px;
         width: 36px;
@@ -2122,7 +2078,6 @@ header{
 
     .player-timeline-panel {
         height: 36px;
-        margin-left: 0.5rem;
     }
     .player-timeline {
         margin-right: 16px;
