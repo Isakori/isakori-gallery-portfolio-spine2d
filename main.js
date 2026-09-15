@@ -56,6 +56,8 @@ let playerPaused = false;
 let playerRotorAngle = 90;
 const playerSpeedRotor = document.querySelector(".player-speed-rotor");
 const playerSpeedValue = document.querySelector(".player-speed-value");
+const playerRotorArrowLeft = document.getElementById("rotor-arrow-left");
+const playerRotorArrowRight = document.getElementById("rotor-arrow-right");
 let isRotorDragging = false;
 let rotorStartX = 0;
 let rotorStartAngle = 90;
@@ -541,6 +543,8 @@ playerSpeedRotor.addEventListener("pointermove", (event) => {
 
     if (Math.abs(deltaX) > 0.5) {
         rotorMoved = true;
+        playerRotorArrowLeft.classList.add('hint');
+        playerRotorArrowRight.classList.add('hint');
     }
 
     // Чувствительность вращения
@@ -559,6 +563,8 @@ playerSpeedRotor.addEventListener("pointermove", (event) => {
 });
 playerSpeedRotor.addEventListener("pointerup", (event) => {
     isRotorDragging = false;
+    playerRotorArrowLeft.classList.remove('hint');
+    playerRotorArrowRight.classList.remove('hint');
     playerSpeedRotor.releasePointerCapture(event.pointerId);
 });
 playerSpeedRotor.addEventListener("click", () => {
