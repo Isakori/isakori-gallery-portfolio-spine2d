@@ -51,6 +51,19 @@ const playerTimelineTrack = document.querySelector(".player-timeline-track");
 const playerTimelineTrackShell = document.querySelector(".player-timeline-track-shell");
 const playerTimelineMarker = document.querySelector(".player-timeline-marker");
 let isDraggingTimeline = false;
+let playerSpeed = 1;
+let playerPaused = false;
+let playerRotorAngle = 90;
+const playerSpeedRotor = document.querySelector(".player-speed-rotor");
+const playerSpeedValue = document.querySelector(".player-speed-value");
+let isRotorDragging = false;
+let rotorStartX = 0;
+let rotorStartAngle = 90;
+const snapThreshold = 10;
+let rotorMoved = false;
+const playerTimeMinMultiplier = 1;
+const playerTimeMaxMultiplier = 5;
+const playerTrackTime = document.querySelector(".player-track-time");
 
 const loadingTextElement = document.getElementById("jumpingText");
 const loadingText = loadingTextElement.textContent;
@@ -509,6 +522,52 @@ playerTimelineTrackShell.addEventListener("pointermove", (event) => {
 playerTimelineTrackShell.addEventListener("pointerup", (event) => {
     isDraggingTimeline = false;
     playerTimeline.releasePointerCapture(event.pointerId);
+});
+
+/* ---------------------------------------------------------------------------------------------- */
+
+playerSpeedRotor.addEventListener("pointerdown", (event) => {
+    rotorMoved = false;
+    isRotorDragging = true;
+    rotorStartX = event.clientX;
+    rotorStartAngle = playerRotorAngle;
+
+    playerSpeedRotor.setPointerCapture(event.pointerId);
+});
+playerSpeedRotor.addEventListener("pointermove", (event) => {
+    if (!isRotorDragging) return;
+
+    const deltaX = event.clientX - rotorStartX;
+
+    if (Math.abs(deltaX) > 0.5) {
+        rotorMoved = true;
+    }
+
+    // Чувствительность вращения
+    const sensitivity = 1;
+
+    let angle = rotorStartAngle + deltaX * sensitivity;
+
+    angle = Math.max(-90, Math.min(180, angle));
+    
+    angle = snapRotorAngle(angle);
+
+    playerRotorAngle = angle;
+    playerSpeed = rotorAngleToSpeed(angle);
+
+    updateSpeedRotor();
+});
+playerSpeedRotor.addEventListener("pointerup", (event) => {
+    isRotorDragging = false;
+    playerSpeedRotor.releasePointerCapture(event.pointerId);
+});
+playerSpeedRotor.addEventListener("click", () => {
+    if (rotorMoved) return;
+
+    playerRotorAngle = 90;
+    playerSpeed = 1;
+
+    updateSpeedRotor();
 });
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -1031,7 +1090,7 @@ function showInViewer(project) {
                 } else {
                     console.log('Список найденных областей:', interactiveBounds);
                 } */
-            /* ------------------------------------------------------------------------------- */
+                /* ------------------------------------------------------------------------------- */
                 app.stage.interactive = true;
                 app.stage.removeAllListeners();
 
@@ -1208,7 +1267,6 @@ function showInViewer(project) {
             // Первый скелет активен по умолчанию
             if (index === 0) selectSkeleton(spine);
 
-            // app.ticker.add(updateTimeline);
             addTicker(updatePlayerTimeline);
         });
         
@@ -1220,6 +1278,7 @@ function showInViewer(project) {
         loader.reset();
 
         createHintLayer(true);
+        resetSpeedRotor();
 
         const offsetTimer = justUnwrapped ? 250 : 0;
             setTimeout(() => {
@@ -1251,6 +1310,8 @@ function pushMetrics(name, value) {
 }
 
 function selectSkeleton(spine) {
+    if (spine == activeSkeleton) return;
+
     activeSkeleton = spine;
     // Обновление активности в меню
     skeletonMenu.querySelectorAll(".dropdown-item").forEach(btn => btn.classList.remove("active"));
@@ -1305,10 +1366,71 @@ function selectSkeleton(spine) {
     });
 
     updateTimelineVisibility(currentAnim);
+    resetSpeedRotor(currentTrack.timeScale);
 }
 
 /* ------------------------------------------------------- ANIMATION ------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------------- */
+
+function speedToRotorAngle(speed) {
+    return speed * 90;
+}
+function rotorAngleToSpeed(angle) {
+    return angle / 90;
+}
+
+function resetSpeedRotor(animSpeed = 1) {
+    if (animSpeed === 0) {
+        playerSpeed = 1;
+        playerRotorAngle = 90;
+        pauseAnimation(activeSkeleton);
+    } else {
+        playerPaused = false;
+        playerSpeed = animSpeed;
+        playerRotorAngle = speedToRotorAngle(animSpeed);
+    }
+
+    updateSpeedRotor();
+}
+function updateSpeedRotor() {
+    playerSpeedRotor.style.transform = `rotate(${playerRotorAngle}deg)`;
+    playerSpeedValue.textContent = formatSpeed(playerSpeed);
+
+    const spineObj = currentSpines.find(s => s.name === activeSkeleton.name);
+    const track = spineObj?.state.getCurrent(0);
+    
+    if (track && !playerPaused) {
+        track.timeScale = playerSpeed;
+    }
+
+    playerSpeedRotor.classList.remove(
+        "speed-negative",
+        "speed-zero",
+        "speed-double"
+    );
+
+    if (playerSpeed < 0) {
+        playerSpeedRotor.classList.add("speed-negative");
+    } else if (playerSpeed >= 0 && playerSpeed < 1) {
+        playerSpeedRotor.classList.add("speed-zero");
+    } else if (playerSpeed > 1) {
+        playerSpeedRotor.classList.add("speed-double");
+    }
+}
+function snapRotorAngle(angle) {
+    const snapPoints = [-90, 0, 90, 180];
+
+    for (const point of snapPoints) {
+        if (Math.abs(angle - point) <= snapThreshold) {
+            return point;
+        }
+    }
+
+    return angle;
+}
+function formatSpeed(speed) {
+    return Number(speed.toFixed(1)).toString();
+}
 
 function updateTimelineVisibility(animName) {
     playerHolder.classList.toggle("hidden", animName === "-default");
@@ -1334,10 +1456,28 @@ function updatePlayerTimeline() {
         return;
     }
 
+    const minTime = duration * playerTimeMinMultiplier;
+    const maxTime = duration * playerTimeMaxMultiplier;
+    const range = maxTime - minTime;
+
+    // Выход за верхнюю границу
+    if (track.trackTime >= maxTime) {
+        const ranges = Math.floor((track.trackTime - minTime) / range) + 1;
+        track.trackTime -= ranges * range;
+    }
+
+    // Выход за нижнюю границу
+    if (track.trackTime < minTime) {
+        const ranges = Math.floor((minTime - track.trackTime) / range) + 1;
+        track.trackTime += ranges * range;
+    }
+
     const time = track.trackTime % duration;
     const progress = time / duration;
 
     playerTimelineMarker.style.left = `${progress * 100}%`;
+    playerTrackTime.textContent = `${formatTrackTime(time)} / ${formatTrackTime(duration)}`;
+    // playerTrackTime.textContent = formatTrackTime(time);
 }
 
 function seekTimeline(clientX) {
@@ -1358,11 +1498,17 @@ function seekTimeline(clientX) {
     let progress = (clientX - rect.left) / rect.width;
     progress = Math.max(0, Math.min(1, progress));
 
-    // track.trackTime = progress * duration;
     const epsilon = 0.0001;
     track.trackTime = Math.min(progress * duration, duration - epsilon);
 
     playerTimelineMarker.style.left = `${progress * 100}%`;
+}
+
+function formatTrackTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 function getCurrentTrack(skeleton) {
@@ -1429,18 +1575,20 @@ function playAnimation(skeleton, animName) {
     const state = spineObj.state;
     const currentTrack = state.getCurrent(0);
 
+    playerPaused = false;
     if (currentTrack && currentTrack.animation.name === animName) {
         // state.tracks.forEach(track => track.timeScale = 1);
-        state.tracks[0].timeScale = 1;
+        currentTrack.timeScale = playerSpeed;
     } else {
-        state.setAnimation(0, animName, true);
-        // state.timeScale = 1;
+        const track = state.setAnimation(0, animName, true);
+        track.timeScale = playerSpeed;
     }
 }
 
 function pauseAnimation(skeleton, animName) {
     const spineObj = currentSpines.find(s => s.name === skeleton.name);
     if (spineObj) {
+        playerPaused = true;
         // spineObj.state.tracks.forEach(track => track.timeScale = 0);
         spineObj.state.tracks[0].timeScale = 0;
     }
@@ -1665,6 +1813,7 @@ function switchInteractionMode(isActive) {
                 toggleAnimation(animBtn, spine, false);
             });
         });
+        resetSpeedRotor();
     } else {
         document.querySelectorAll(".hideable-when-interaction").forEach(element => {
             element.style.display = "";
