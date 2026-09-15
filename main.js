@@ -539,6 +539,8 @@ playerSpeedRotor.addEventListener("pointerdown", (event) => {
     playerRotorRail.classList.add('highlighted');
 
     playerSpeedRotor.setPointerCapture(event.pointerId);
+
+    vibrate(12);
 });
 playerSpeedRotor.addEventListener("pointermove", (event) => {
     if (!isRotorDragging) return;
@@ -583,6 +585,12 @@ playerSpeedRotor.addEventListener("click", () => {
     playerSpeed = 1;
     updateSpeedRotor();
 });
+
+function vibrate(duration = 12) {
+    if ("vibrate" in navigator) {
+        navigator.vibrate(duration);
+    }
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------- Loading projects */

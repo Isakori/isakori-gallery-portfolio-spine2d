@@ -1400,9 +1400,10 @@ header{
     width: 140%;
 }
 .player-speed-rotor {
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
+    -webkit-touch-callout: none;
 
     display: flex;
     justify-content: start;
