@@ -904,6 +904,9 @@ header{
 #viewer.maximized {
     flex-grow: 8;
 }
+#viewer.interaction-mode {
+    cursor: url("icon/PCIcon_MousePoint_x32.png") 0 0, default;
+}
 
 .canvas-holder{
     display: flex;

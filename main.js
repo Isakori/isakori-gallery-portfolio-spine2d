@@ -137,6 +137,7 @@ interactionSwitcher.addEventListener('click', (e) => {
     interactionSwitcher.classList.toggle("active");
     switchInteractionMode(interactionSwitcher.classList.contains("active"));
     hintContainer.visible = false;
+    viewer.classList.toggle("interaction-mode");
 });
 interactionSwitcher.addEventListener('pointerdown', () => {
     hintContainer.visible = true;
@@ -666,10 +667,22 @@ loadProjects().then((projects) => {
         card.dataset.projectId = project.id;
 
         const img = document.createElement("img");
-        img.src = `${project.path}/${project.projectName}${project.imagePostfix}`;
+        // img.src = `${project.path}/${project.projectName}${project.imagePostfix}`;
         img.classList.add("card-img");
         img.draggable = false;
         img.loading = "lazy";
+
+        const imageSrc = `${project.path}/${project.projectName}${project.imagePostfix}`;
+
+        img.onerror = () => {
+            img.dataset.retry = "true";
+
+            setTimeout(() => {
+                const separator = imageSrc.includes("?") ? "&" : "?";
+                img.src = `${imageSrc}${separator}retry=${Date.now()}`;
+            }, 200);
+        };
+        img.src = imageSrc;
 
         const label = document.createElement("div");
         label.innerHTML = project.projectName;
@@ -739,6 +752,10 @@ const handTouch = PIXI.Sprite.from('./icon/interactClick.svg');
 /* ------------------------------------------------- particle container over Viewport */
 const particleLayer = new PIXI.Container();
 app.stage.addChild(particleLayer);
+const clickCircleTexture = PIXI.Texture.from('./particles/mainGlowing.png');
+const triangleTexture = PIXI.Texture.from('./particles/triangleParticle.png');
+const triangleFlippedTexture = PIXI.Texture.from('./particles/triangleParticleInvert.png');
+
 /* ----------------------------------------------------------------------------------------- */
 viewport
     .drag({ mouseButtons: ['right', 'left']
@@ -1866,7 +1883,6 @@ function resetInteractionMode() {
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------------------------- VFX ------------------------------------------------------------------------------ */
-
 function playClickVFX(x, y) {
     spawnClickParticle(x, y);
     spawnTriangleParticles(x, y);
@@ -1931,7 +1947,7 @@ function spawnClickParticle(x, y) {
                         }
                     }
                 },
-                { type: 'textureSingle', config: { texture: './particles/mainGlowing.png' } },
+                { type: 'textureSingle', config: { texture: clickCircleTexture } },
             ],
         }
     );
@@ -2058,8 +2074,8 @@ function spawnTriangleParticles(x, y, options = {
                     type: 'textureRandom',
                     config: {
                         textures: [
-                            './particles/triangleParticle.png',
-                            './particles/triangleParticleInvert.png'
+                            triangleTexture,
+                            triangleFlippedTexture
                         ]
                     }
                 },
